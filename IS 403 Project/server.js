@@ -49,6 +49,11 @@ app.use((req, res, next) => {
     next();
 });
 
+// Healthcheck endpoint for AWS ELB
+app.get('/health', (req, res) => {
+    res.status(200).json({ status: 'healthy', timestamp: new Date().toISOString() });
+});
+
 // Import routes
 const authRoutes = require('./routes/auth');
 const dashboardRoutes = require('./routes/dashboard');

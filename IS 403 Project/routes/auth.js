@@ -393,4 +393,168 @@ router.post('/profile/password', requireAuth, async (req, res) => {
     }
 });
 
+// Delete account
+router.post('/profile/delete', requireAuth, async (req, res) => {
+    const userId = req.session.user.user_id;
+    const { password } = req.body;
+
+    try {
+        // Verify password before deletion
+        const user = await db('users')
+            .select('password_hash', 'profile_photo')
+            .where({ user_id: userId })
+            .first();
+
+        const match = await bcrypt.compare(password, user.password_hash);
+        if (!match) {
+            req.session.error = 'Incorrect password. Account not deleted.';
+            return res.redirect('/profile');
+        }
+
+        // Delete profile photo if exists
+        if (user.profile_photo && !user.profile_photo.includes('placeholder')) {
+            const photoPath = path.join(__dirname, '..', user.profile_photo);
+            if (fs.existsSync(photoPath)) {
+                fs.unlinkSync(photoPath);
+            }
+        }
+
+        // Delete user (cascade will delete contacts, events, goals)
+        await db('users').where({ user_id: userId }).del();
+
+        // Destroy session
+        req.session.destroy((err) => {
+            if (err) console.error('Session destroy error:', err);
+            res.redirect('/?deleted=true');
+        });
+
+    } catch (error) {
+        console.error('Delete account error:', error);
+        req.session.error = 'Error deleting account';
+        res.redirect('/profile');
+    }
+});
+
+// Forgot password page
+router.get('/forgot-password', requireGuest, (req, res) => {
+    res.render('forgot-password', {
+        pageTitle: 'Reset Password - Cal-Endure to the End'
+    });
+});
+
+// Handle forgot password - generate reset token
+router.post('/forgot-password', requireGuest, async (req, res) => {
+    const { email } = req.body;
+
+    try {
+        const user = await db('users')
+            .where({ email: email.trim().toLowerCase() })
+            .first();
+
+        if (!user) {
+            // Don't reveal if email exists
+            req.session.success = 'If an account exists with that email, you will receive reset instructions.';
+            return res.redirect('/forgot-password');
+        }
+
+        // Generate reset token
+        const resetToken = Math.random().toString(36).substring(2, 15) +
+                         Math.random().toString(36).substring(2, 15);
+        const resetExpires = new Date(Date.now() + 3600000); // 1 hour
+
+        // Store reset token
+        await db('users')
+            .where({ user_id: user.user_id })
+            .update({
+                reset_token: resetToken,
+                reset_expires: resetExpires
+            });
+
+        // In production, send email here. For now, show token in success message
+        req.session.success = `Password reset link: /reset-password/${resetToken} (valid for 1 hour)`;
+        res.redirect('/forgot-password');
+
+    } catch (error) {
+        console.error('Forgot password error:', error);
+        req.session.error = 'Error processing request';
+        res.redirect('/forgot-password');
+    }
+});
+
+// Reset password page
+router.get('/reset-password/:token', requireGuest, async (req, res) => {
+    const { token } = req.params;
+
+    try {
+        const user = await db('users')
+            .where({ reset_token: token })
+            .where('reset_expires', '>', new Date())
+            .first();
+
+        if (!user) {
+            req.session.error = 'Invalid or expired reset token';
+            return res.redirect('/forgot-password');
+        }
+
+        res.render('reset-password', {
+            pageTitle: 'Set New Password - Cal-Endure to the End',
+            token
+        });
+
+    } catch (error) {
+        console.error('Reset password page error:', error);
+        req.session.error = 'Error loading reset page';
+        res.redirect('/forgot-password');
+    }
+});
+
+// Handle password reset
+router.post('/reset-password/:token', requireGuest, async (req, res) => {
+    const { token } = req.params;
+    const { password, confirmPassword } = req.body;
+
+    try {
+        if (password !== confirmPassword) {
+            req.session.error = 'Passwords do not match';
+            return res.redirect(`/reset-password/${token}`);
+        }
+
+        if (password.length < 6) {
+            req.session.error = 'Password must be at least 6 characters';
+            return res.redirect(`/reset-password/${token}`);
+        }
+
+        const user = await db('users')
+            .where({ reset_token: token })
+            .where('reset_expires', '>', new Date())
+            .first();
+
+        if (!user) {
+            req.session.error = 'Invalid or expired reset token';
+            return res.redirect('/forgot-password');
+        }
+
+        // Hash new password
+        const saltRounds = 10;
+        const password_hash = await bcrypt.hash(password, saltRounds);
+
+        // Update password and clear reset token
+        await db('users')
+            .where({ user_id: user.user_id })
+            .update({
+                password_hash,
+                reset_token: null,
+                reset_expires: null
+            });
+
+        req.session.success = 'Password reset successfully. Please log in.';
+        res.redirect('/login');
+
+    } catch (error) {
+        console.error('Reset password error:', error);
+        req.session.error = 'Error resetting password';
+        res.redirect('/forgot-password');
+    }
+});
+
 module.exports = router;

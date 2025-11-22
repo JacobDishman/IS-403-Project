@@ -90,198 +90,13 @@
                         </div>
                     <% }); %>
                 <% } else { %>
-                    <!-- Sample Contact Cards (fallback if no contacts) -->
-                <div class="contact-card" data-contact-id="1">
-                    <div class="contact-card-header">
-                        <img src="https://via.placeholder.com/100" alt="Sarah Johnson" class="contact-photo">
-                        <button class="favorite-btn" onclick="toggleFavorite(1)">⭐</button>
+                    <!-- Empty state -->
+                    <div class="empty-state">
+                        <div class="empty-state-icon">👥</div>
+                        <h3>No contacts yet</h3>
+                        <p>Start building your network by adding your first contact.</p>
+                        <button class="btn-primary" onclick="openAddContactModal()">+ Add Your First Contact</button>
                     </div>
-                    <div class="contact-card-body">
-                        <h3 class="contact-name">Sarah Johnson</h3>
-                        <div class="contact-info">
-                            <div class="contact-info-item">
-                                <span class="info-icon">📱</span>
-                                <span>(555) 123-4567</span>
-                            </div>
-                            <div class="contact-info-item">
-                                <span class="info-icon">✉️</span>
-                                <span>sarah.j@email.com</span>
-                            </div>
-                            <div class="contact-info-item">
-                                <span class="info-icon">📍</span>
-                                <span>Provo, UT</span>
-                            </div>
-                        </div>
-                        <div class="contact-stats-mini">
-                            <span class="mini-stat">5 events together</span>
-                        </div>
-                    </div>
-                    <div class="contact-card-actions">
-                        <button class="btn-card" onclick="viewContact(1)">View</button>
-                        <button class="btn-card" onclick="editContact(1)">Edit</button>
-                        <button class="btn-card-danger" onclick="deleteContact(1)">Delete</button>
-                    </div>
-                </div>
-
-                <div class="contact-card" data-contact-id="2">
-                    <div class="contact-card-header">
-                        <img src="https://via.placeholder.com/100" alt="John Smith" class="contact-photo">
-                        <button class="favorite-btn" onclick="toggleFavorite(2)">☆</button>
-                    </div>
-                    <div class="contact-card-body">
-                        <h3 class="contact-name">John Smith</h3>
-                        <div class="contact-info">
-                            <div class="contact-info-item">
-                                <span class="info-icon">📱</span>
-                                <span>(555) 987-6543</span>
-                            </div>
-                            <div class="contact-info-item">
-                                <span class="info-icon">✉️</span>
-                                <span>john.smith@email.com</span>
-                            </div>
-                            <div class="contact-info-item">
-                                <span class="info-icon">📍</span>
-                                <span>Orem, UT</span>
-                            </div>
-                        </div>
-                        <div class="contact-stats-mini">
-                            <span class="mini-stat">3 events together</span>
-                        </div>
-                    </div>
-                    <div class="contact-card-actions">
-                        <button class="btn-card" onclick="viewContact(2)">View</button>
-                        <button class="btn-card" onclick="editContact(2)">Edit</button>
-                        <button class="btn-card-danger" onclick="deleteContact(2)">Delete</button>
-                    </div>
-                </div>
-
-                <div class="contact-card" data-contact-id="3">
-                    <div class="contact-card-header">
-                        <img src="https://via.placeholder.com/100" alt="Emily Davis" class="contact-photo">
-                        <button class="favorite-btn" onclick="toggleFavorite(3)">⭐</button>
-                    </div>
-                    <div class="contact-card-body">
-                        <h3 class="contact-name">Emily Davis</h3>
-                        <div class="contact-info">
-                            <div class="contact-info-item">
-                                <span class="info-icon">📱</span>
-                                <span>(555) 456-7890</span>
-                            </div>
-                            <div class="contact-info-item">
-                                <span class="info-icon">✉️</span>
-                                <span>emily.d@email.com</span>
-                            </div>
-                            <div class="contact-info-item">
-                                <span class="info-icon">📍</span>
-                                <span>Salt Lake City, UT</span>
-                            </div>
-                        </div>
-                        <div class="contact-stats-mini">
-                            <span class="mini-stat">8 events together</span>
-                        </div>
-                    </div>
-                    <div class="contact-card-actions">
-                        <button class="btn-card" onclick="viewContact(3)">View</button>
-                        <button class="btn-card" onclick="editContact(3)">Edit</button>
-                        <button class="btn-card-danger" onclick="deleteContact(3)">Delete</button>
-                    </div>
-                </div>
-
-                <div class="contact-card" data-contact-id="4">
-                    <div class="contact-card-header">
-                        <img src="https://via.placeholder.com/100" alt="Michael Brown" class="contact-photo">
-                        <button class="favorite-btn" onclick="toggleFavorite(4)">☆</button>
-                    </div>
-                    <div class="contact-card-body">
-                        <h3 class="contact-name">Michael Brown</h3>
-                        <div class="contact-info">
-                            <div class="contact-info-item">
-                                <span class="info-icon">📱</span>
-                                <span>(555) 234-5678</span>
-                            </div>
-                            <div class="contact-info-item">
-                                <span class="info-icon">✉️</span>
-                                <span>m.brown@email.com</span>
-                            </div>
-                            <div class="contact-info-item">
-                                <span class="info-icon">📍</span>
-                                <span>Lehi, UT</span>
-                            </div>
-                        </div>
-                        <div class="contact-stats-mini">
-                            <span class="mini-stat">2 events together</span>
-                        </div>
-                    </div>
-                    <div class="contact-card-actions">
-                        <button class="btn-card" onclick="viewContact(4)">View</button>
-                        <button class="btn-card" onclick="editContact(4)">Edit</button>
-                        <button class="btn-card-danger" onclick="deleteContact(4)">Delete</button>
-                    </div>
-                </div>
-
-                <div class="contact-card" data-contact-id="5">
-                    <div class="contact-card-header">
-                        <img src="https://via.placeholder.com/100" alt="Sister Martinez" class="contact-photo">
-                        <button class="favorite-btn" onclick="toggleFavorite(5)">⭐</button>
-                    </div>
-                    <div class="contact-card-body">
-                        <h3 class="contact-name">Sister Martinez</h3>
-                        <div class="contact-info">
-                            <div class="contact-info-item">
-                                <span class="info-icon">📱</span>
-                                <span>(555) 345-6789</span>
-                            </div>
-                            <div class="contact-info-item">
-                                <span class="info-icon">✉️</span>
-                                <span>martinez@email.com</span>
-                            </div>
-                            <div class="contact-info-item">
-                                <span class="info-icon">📍</span>
-                                <span>Springville, UT</span>
-                            </div>
-                        </div>
-                        <div class="contact-stats-mini">
-                            <span class="mini-stat">12 events together</span>
-                        </div>
-                    </div>
-                    <div class="contact-card-actions">
-                        <button class="btn-card" onclick="viewContact(5)">View</button>
-                        <button class="btn-card" onclick="editContact(5)">Edit</button>
-                        <button class="btn-card-danger" onclick="deleteContact(5)">Delete</button>
-                    </div>
-                </div>
-
-                <div class="contact-card" data-contact-id="6">
-                    <div class="contact-card-header">
-                        <img src="https://via.placeholder.com/100" alt="David Wilson" class="contact-photo">
-                        <button class="favorite-btn" onclick="toggleFavorite(6)">☆</button>
-                    </div>
-                    <div class="contact-card-body">
-                        <h3 class="contact-name">David Wilson</h3>
-                        <div class="contact-info">
-                            <div class="contact-info-item">
-                                <span class="info-icon">📱</span>
-                                <span>(555) 567-8901</span>
-                            </div>
-                            <div class="contact-info-item">
-                                <span class="info-icon">✉️</span>
-                                <span>d.wilson@email.com</span>
-                            </div>
-                            <div class="contact-info-item">
-                                <span class="info-icon">📍</span>
-                                <span>American Fork, UT</span>
-                            </div>
-                        </div>
-                        <div class="contact-stats-mini">
-                            <span class="mini-stat">1 event together</span>
-                        </div>
-                    </div>
-                    <div class="contact-card-actions">
-                        <button class="btn-card" onclick="viewContact(6)">View</button>
-                        <button class="btn-card" onclick="editContact(6)">Edit</button>
-                        <button class="btn-card-danger" onclick="deleteContact(6)">Delete</button>
-                    </div>
-                </div>
                 <% } %>
             </div>
         </div>
@@ -731,6 +546,29 @@
         .view-contact-notes p {
             color: #555;
             white-space: pre-wrap;
+        }
+
+        /* Empty state styles */
+        .empty-state {
+            grid-column: 1 / -1;
+            text-align: center;
+            padding: 60px 20px;
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+        }
+        .empty-state-icon {
+            font-size: 64px;
+            margin-bottom: 16px;
+        }
+        .empty-state h3 {
+            margin: 0 0 8px 0;
+            color: #333;
+            font-size: 24px;
+        }
+        .empty-state p {
+            margin: 0 0 24px 0;
+            color: #666;
         }
     </style>
 </body>

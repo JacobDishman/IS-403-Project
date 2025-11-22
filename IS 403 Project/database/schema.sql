@@ -17,6 +17,8 @@ CREATE TABLE users (
     password_hash VARCHAR(255) NOT NULL,
     mission VARCHAR(100),
     profile_photo VARCHAR(255) DEFAULT 'https://via.placeholder.com/150',
+    reset_token VARCHAR(100),
+    reset_expires TIMESTAMP,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
