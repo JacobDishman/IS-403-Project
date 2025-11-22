@@ -52,6 +52,13 @@ router.get('/login', requireGuest, (req, res) => {
     });
 });
 
+// Signup page
+router.get('/signup', requireGuest, (req, res) => {
+    res.render('signup', {
+        pageTitle: 'Create Account - Cal-Endure to the End'
+    });
+});
+
 // Handle login
 router.post('/login', requireGuest, async (req, res) => {
     const { email, password, remember } = req.body;
@@ -109,29 +116,29 @@ router.post('/signup', requireGuest, async (req, res) => {
         // Validation
         if (!firstName || !lastName || !email || !username || !password) {
             req.session.error = 'All required fields must be filled';
-            return res.redirect('/login#signup');
+            return res.redirect('/signup');
         }
 
         // Email format validation
         if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email.trim())) {
             req.session.error = 'Invalid email format';
-            return res.redirect('/login#signup');
+            return res.redirect('/signup');
         }
 
         // Username validation (alphanumeric, underscores, 3-30 chars)
         if (!/^[a-zA-Z0-9_]{3,30}$/.test(username.trim())) {
             req.session.error = 'Username must be 3-30 characters and contain only letters, numbers, and underscores';
-            return res.redirect('/login#signup');
+            return res.redirect('/signup');
         }
 
         if (password !== confirmPassword) {
             req.session.error = 'Passwords do not match';
-            return res.redirect('/login#signup');
+            return res.redirect('/signup');
         }
 
         if (password.length < 6) {
             req.session.error = 'Password must be at least 6 characters';
-            return res.redirect('/login#signup');
+            return res.redirect('/signup');
         }
 
         // Check if email or username already exists
@@ -142,7 +149,7 @@ router.post('/signup', requireGuest, async (req, res) => {
 
         if (existingUser) {
             req.session.error = 'Email or username already exists';
-            return res.redirect('/login#signup');
+            return res.redirect('/signup');
         }
 
         // Hash password
@@ -178,7 +185,7 @@ router.post('/signup', requireGuest, async (req, res) => {
     } catch (error) {
         console.error('Signup error:', error);
         req.session.error = 'An error occurred during signup';
-        res.redirect('/login#signup');
+        res.redirect('/signup');
     }
 });
 
