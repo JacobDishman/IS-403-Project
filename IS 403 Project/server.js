@@ -1,5 +1,6 @@
 const express = require('express');
 const session = require('express-session');
+const pgSession = require('connect-pg-simple')(session);
 const path = require('path');
 const dotenv = require('dotenv');
 
@@ -9,6 +10,17 @@ dotenv.config();
 const app = express();
 const PORT = process.env.PORT || 3000;
 const isProduction = process.env.NODE_ENV === 'production';
+
+// PostgreSQL connection for session store
+const pgPool = require('pg').Pool;
+const sessionPool = new pgPool({
+    user: process.env.DB_USER || 'postgres',
+    host: process.env.DB_HOST || 'localhost',
+    database: process.env.DB_NAME || 'cal_endure',
+    password: process.env.DB_PASSWORD || 'postgres',
+    port: process.env.DB_PORT || 5432,
+    ssl: isProduction ? { rejectUnauthorized: false } : false
+});
 
 // Trust proxy for AWS Elastic Beanstalk
 if (isProduction) {
@@ -21,8 +33,13 @@ app.use(express.json());
 app.use(express.static(path.join(__dirname)));
 app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 
-// Session configuration
+// Session configuration with PostgreSQL store
 app.use(session({
+    store: new pgSession({
+        pool: sessionPool,
+        tableName: 'session',
+        createTableIfMissing: true
+    }),
     secret: process.env.SESSION_SECRET || 'your-secret-key',
     resave: false,
     saveUninitialized: false,

@@ -17,11 +17,18 @@ CREATE TABLE users (
     password_hash VARCHAR(255) NOT NULL,
     mission VARCHAR(100),
     profile_photo VARCHAR(255) DEFAULT 'https://via.placeholder.com/150',
-    reset_token VARCHAR(100),
-    reset_expires TIMESTAMP,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
+
+-- Session Table (for connect-pg-simple)
+CREATE TABLE "session" (
+    "sid" varchar NOT NULL COLLATE "default",
+    "sess" json NOT NULL,
+    "expire" timestamp(6) NOT NULL,
+    CONSTRAINT "session_pkey" PRIMARY KEY ("sid")
+);
+CREATE INDEX "IDX_session_expire" ON "session" ("expire");
 
 -- Contacts Table
 CREATE TABLE contacts (
