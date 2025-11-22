@@ -1,0 +1,304 @@
+<%- include('partials/header', {pageTitle: pageTitle}) %>
+<body>
+    <%- include('partials/app-navbar', {currentPage: currentPage, user: user}) %>
+
+    <div class="app-container">
+        <div class="profile-page">
+            <h1 class="page-title">Profile</h1>
+
+            <% if (typeof error !== 'undefined' && error) { %>
+                <div class="alert alert-error"><%= error %></div>
+            <% } %>
+            <% if (typeof success !== 'undefined' && success) { %>
+                <div class="alert alert-success"><%= success %></div>
+            <% } %>
+
+            <div class="profile-grid">
+                <!-- Profile Photo Section -->
+                <div class="profile-card">
+                    <h2>Profile Photo</h2>
+                    <div class="photo-section">
+                        <div class="current-photo">
+                            <img src="<%= user.profile_photo || 'https://via.placeholder.com/150' %>" alt="Profile Photo" class="profile-photo-large">
+                        </div>
+                        <form action="/profile/photo" method="POST" enctype="multipart/form-data" class="photo-form">
+                            <label class="file-upload-label">
+                                <input type="file" name="profilePhoto" accept="image/*" required>
+                                <span class="btn-secondary">Choose Photo</span>
+                            </label>
+                            <button type="submit" class="btn-primary">Upload</button>
+                        </form>
+                    </div>
+                </div>
+
+                <!-- Account Information Section -->
+                <div class="profile-card">
+                    <h2>Account Information</h2>
+                    <form action="/profile/update" method="POST" class="profile-form">
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="firstName">First Name</label>
+                                <input type="text" id="firstName" name="firstName" value="<%= user.first_name %>" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="lastName">Last Name</label>
+                                <input type="text" id="lastName" name="lastName" value="<%= user.last_name %>" required>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label for="email">Email</label>
+                            <input type="email" id="email" name="email" value="<%= user.email %>" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="username">Username</label>
+                            <input type="text" id="username" name="username" value="<%= user.username %>" required>
+                            <small>3-30 characters, letters, numbers, and underscores only</small>
+                        </div>
+                        <div class="form-group">
+                            <label for="mission">Mission (Optional)</label>
+                            <input type="text" id="mission" name="mission" value="<%= user.mission || '' %>" placeholder="e.g., California Los Angeles">
+                        </div>
+                        <button type="submit" class="btn-primary">Save Changes</button>
+                    </form>
+                </div>
+
+                <!-- Change Password Section -->
+                <div class="profile-card">
+                    <h2>Change Password</h2>
+                    <form action="/profile/password" method="POST" class="profile-form">
+                        <div class="form-group">
+                            <label for="currentPassword">Current Password</label>
+                            <input type="password" id="currentPassword" name="currentPassword" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="newPassword">New Password</label>
+                            <input type="password" id="newPassword" name="newPassword" required minlength="6">
+                            <small>Minimum 6 characters</small>
+                        </div>
+                        <div class="form-group">
+                            <label for="confirmPassword">Confirm New Password</label>
+                            <input type="password" id="confirmPassword" name="confirmPassword" required minlength="6">
+                        </div>
+                        <button type="submit" class="btn-primary">Change Password</button>
+                    </form>
+                </div>
+
+                <!-- Delete Account Section -->
+                <div class="profile-card danger-zone">
+                    <h2>Delete Account</h2>
+                    <p class="danger-warning">This action is permanent and cannot be undone. All your data including contacts, events, and goals will be deleted.</p>
+                    <form action="/profile/delete" method="POST" class="profile-form" onsubmit="return confirm('Are you absolutely sure you want to delete your account? This cannot be undone.')">
+                        <div class="form-group">
+                            <label for="deletePassword">Enter your password to confirm</label>
+                            <input type="password" id="deletePassword" name="password" required>
+                        </div>
+                        <button type="submit" class="btn-danger">Delete My Account</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <style>
+        .profile-page {
+            padding: 2rem;
+            max-width: 1000px;
+            margin: 0 auto;
+        }
+
+        .page-title {
+            font-size: 2rem;
+            margin-bottom: 1.5rem;
+            color: #333;
+        }
+
+        .profile-grid {
+            display: grid;
+            gap: 1.5rem;
+        }
+
+        .profile-card {
+            background: white;
+            border-radius: 12px;
+            padding: 1.5rem;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        .profile-card h2 {
+            font-size: 1.25rem;
+            margin-bottom: 1rem;
+            color: #333;
+            border-bottom: 2px solid #2ec0f9;
+            padding-bottom: 0.5rem;
+        }
+
+        .photo-section {
+            display: flex;
+            align-items: center;
+            gap: 1.5rem;
+            flex-wrap: wrap;
+        }
+
+        .profile-photo-large {
+            width: 120px;
+            height: 120px;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 3px solid #2ec0f9;
+        }
+
+        .photo-form {
+            display: flex;
+            gap: 0.75rem;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+
+        .file-upload-label {
+            cursor: pointer;
+        }
+
+        .file-upload-label input[type="file"] {
+            display: none;
+        }
+
+        .profile-form {
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+        }
+
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1rem;
+        }
+
+        .form-group {
+            display: flex;
+            flex-direction: column;
+            gap: 0.25rem;
+        }
+
+        .form-group label {
+            font-weight: 500;
+            color: #555;
+            font-size: 0.9rem;
+        }
+
+        .form-group input {
+            padding: 0.75rem;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            font-size: 1rem;
+            transition: border-color 0.2s;
+        }
+
+        .form-group input:focus {
+            outline: none;
+            border-color: #2ec0f9;
+        }
+
+        .form-group small {
+            color: #888;
+            font-size: 0.75rem;
+        }
+
+        .btn-primary {
+            background: #2ec0f9;
+            color: white;
+            border: none;
+            padding: 0.75rem 1.5rem;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 1rem;
+            font-weight: 500;
+            transition: background 0.2s;
+            align-self: flex-start;
+        }
+
+        .btn-primary:hover {
+            background: #1ba8e0;
+        }
+
+        .btn-secondary {
+            background: #f0f0f0;
+            color: #333;
+            border: 1px solid #ddd;
+            padding: 0.75rem 1.5rem;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 0.9rem;
+            display: inline-block;
+        }
+
+        .btn-secondary:hover {
+            background: #e0e0e0;
+        }
+
+        .alert {
+            padding: 1rem;
+            border-radius: 8px;
+            margin-bottom: 1rem;
+        }
+
+        .alert-error {
+            background: #fee;
+            color: #c00;
+            border: 1px solid #fcc;
+        }
+
+        .alert-success {
+            background: #efe;
+            color: #060;
+            border: 1px solid #cfc;
+        }
+
+        @media (max-width: 600px) {
+            .form-row {
+                grid-template-columns: 1fr;
+            }
+
+            .photo-section {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+        }
+
+        /* Danger Zone Styles */
+        .danger-zone {
+            border: 2px solid #ff6b6b;
+        }
+
+        .danger-zone h2 {
+            color: #c00;
+            border-bottom-color: #ff6b6b;
+        }
+
+        .danger-warning {
+            color: #666;
+            font-size: 0.9rem;
+            margin-bottom: 1rem;
+            padding: 0.75rem;
+            background: #fff5f5;
+            border-radius: 6px;
+        }
+
+        .btn-danger {
+            background: #ff6b6b;
+            color: white;
+            border: none;
+            padding: 0.75rem 1.5rem;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 1rem;
+            font-weight: 500;
+            transition: background 0.2s;
+        }
+
+        .btn-danger:hover {
+            background: #ee5a5a;
+        }
+    </style>
+
+    <%- include('partials/footer') %>

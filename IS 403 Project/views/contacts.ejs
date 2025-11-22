@@ -90,198 +90,13 @@
                         </div>
                     <% }); %>
                 <% } else { %>
-                    <!-- Sample Contact Cards (fallback if no contacts) -->
-                <div class="contact-card" data-contact-id="1">
-                    <div class="contact-card-header">
-                        <img src="https://via.placeholder.com/100" alt="Sarah Johnson" class="contact-photo">
-                        <button class="favorite-btn" onclick="toggleFavorite(1)">⭐</button>
+                    <!-- Empty state -->
+                    <div class="empty-state">
+                        <div class="empty-state-icon">👥</div>
+                        <h3>No contacts yet</h3>
+                        <p>Start building your network by adding your first contact.</p>
+                        <button class="btn-primary" onclick="openAddContactModal()">+ Add Your First Contact</button>
                     </div>
-                    <div class="contact-card-body">
-                        <h3 class="contact-name">Sarah Johnson</h3>
-                        <div class="contact-info">
-                            <div class="contact-info-item">
-                                <span class="info-icon">📱</span>
-                                <span>(555) 123-4567</span>
-                            </div>
-                            <div class="contact-info-item">
-                                <span class="info-icon">✉️</span>
-                                <span>sarah.j@email.com</span>
-                            </div>
-                            <div class="contact-info-item">
-                                <span class="info-icon">📍</span>
-                                <span>Provo, UT</span>
-                            </div>
-                        </div>
-                        <div class="contact-stats-mini">
-                            <span class="mini-stat">5 events together</span>
-                        </div>
-                    </div>
-                    <div class="contact-card-actions">
-                        <button class="btn-card" onclick="viewContact(1)">View</button>
-                        <button class="btn-card" onclick="editContact(1)">Edit</button>
-                        <button class="btn-card-danger" onclick="deleteContact(1)">Delete</button>
-                    </div>
-                </div>
-
-                <div class="contact-card" data-contact-id="2">
-                    <div class="contact-card-header">
-                        <img src="https://via.placeholder.com/100" alt="John Smith" class="contact-photo">
-                        <button class="favorite-btn" onclick="toggleFavorite(2)">☆</button>
-                    </div>
-                    <div class="contact-card-body">
-                        <h3 class="contact-name">John Smith</h3>
-                        <div class="contact-info">
-                            <div class="contact-info-item">
-                                <span class="info-icon">📱</span>
-                                <span>(555) 987-6543</span>
-                            </div>
-                            <div class="contact-info-item">
-                                <span class="info-icon">✉️</span>
-                                <span>john.smith@email.com</span>
-                            </div>
-                            <div class="contact-info-item">
-                                <span class="info-icon">📍</span>
-                                <span>Orem, UT</span>
-                            </div>
-                        </div>
-                        <div class="contact-stats-mini">
-                            <span class="mini-stat">3 events together</span>
-                        </div>
-                    </div>
-                    <div class="contact-card-actions">
-                        <button class="btn-card" onclick="viewContact(2)">View</button>
-                        <button class="btn-card" onclick="editContact(2)">Edit</button>
-                        <button class="btn-card-danger" onclick="deleteContact(2)">Delete</button>
-                    </div>
-                </div>
-
-                <div class="contact-card" data-contact-id="3">
-                    <div class="contact-card-header">
-                        <img src="https://via.placeholder.com/100" alt="Emily Davis" class="contact-photo">
-                        <button class="favorite-btn" onclick="toggleFavorite(3)">⭐</button>
-                    </div>
-                    <div class="contact-card-body">
-                        <h3 class="contact-name">Emily Davis</h3>
-                        <div class="contact-info">
-                            <div class="contact-info-item">
-                                <span class="info-icon">📱</span>
-                                <span>(555) 456-7890</span>
-                            </div>
-                            <div class="contact-info-item">
-                                <span class="info-icon">✉️</span>
-                                <span>emily.d@email.com</span>
-                            </div>
-                            <div class="contact-info-item">
-                                <span class="info-icon">📍</span>
-                                <span>Salt Lake City, UT</span>
-                            </div>
-                        </div>
-                        <div class="contact-stats-mini">
-                            <span class="mini-stat">8 events together</span>
-                        </div>
-                    </div>
-                    <div class="contact-card-actions">
-                        <button class="btn-card" onclick="viewContact(3)">View</button>
-                        <button class="btn-card" onclick="editContact(3)">Edit</button>
-                        <button class="btn-card-danger" onclick="deleteContact(3)">Delete</button>
-                    </div>
-                </div>
-
-                <div class="contact-card" data-contact-id="4">
-                    <div class="contact-card-header">
-                        <img src="https://via.placeholder.com/100" alt="Michael Brown" class="contact-photo">
-                        <button class="favorite-btn" onclick="toggleFavorite(4)">☆</button>
-                    </div>
-                    <div class="contact-card-body">
-                        <h3 class="contact-name">Michael Brown</h3>
-                        <div class="contact-info">
-                            <div class="contact-info-item">
-                                <span class="info-icon">📱</span>
-                                <span>(555) 234-5678</span>
-                            </div>
-                            <div class="contact-info-item">
-                                <span class="info-icon">✉️</span>
-                                <span>m.brown@email.com</span>
-                            </div>
-                            <div class="contact-info-item">
-                                <span class="info-icon">📍</span>
-                                <span>Lehi, UT</span>
-                            </div>
-                        </div>
-                        <div class="contact-stats-mini">
-                            <span class="mini-stat">2 events together</span>
-                        </div>
-                    </div>
-                    <div class="contact-card-actions">
-                        <button class="btn-card" onclick="viewContact(4)">View</button>
-                        <button class="btn-card" onclick="editContact(4)">Edit</button>
-                        <button class="btn-card-danger" onclick="deleteContact(4)">Delete</button>
-                    </div>
-                </div>
-
-                <div class="contact-card" data-contact-id="5">
-                    <div class="contact-card-header">
-                        <img src="https://via.placeholder.com/100" alt="Sister Martinez" class="contact-photo">
-                        <button class="favorite-btn" onclick="toggleFavorite(5)">⭐</button>
-                    </div>
-                    <div class="contact-card-body">
-                        <h3 class="contact-name">Sister Martinez</h3>
-                        <div class="contact-info">
-                            <div class="contact-info-item">
-                                <span class="info-icon">📱</span>
-                                <span>(555) 345-6789</span>
-                            </div>
-                            <div class="contact-info-item">
-                                <span class="info-icon">✉️</span>
-                                <span>martinez@email.com</span>
-                            </div>
-                            <div class="contact-info-item">
-                                <span class="info-icon">📍</span>
-                                <span>Springville, UT</span>
-                            </div>
-                        </div>
-                        <div class="contact-stats-mini">
-                            <span class="mini-stat">12 events together</span>
-                        </div>
-                    </div>
-                    <div class="contact-card-actions">
-                        <button class="btn-card" onclick="viewContact(5)">View</button>
-                        <button class="btn-card" onclick="editContact(5)">Edit</button>
-                        <button class="btn-card-danger" onclick="deleteContact(5)">Delete</button>
-                    </div>
-                </div>
-
-                <div class="contact-card" data-contact-id="6">
-                    <div class="contact-card-header">
-                        <img src="https://via.placeholder.com/100" alt="David Wilson" class="contact-photo">
-                        <button class="favorite-btn" onclick="toggleFavorite(6)">☆</button>
-                    </div>
-                    <div class="contact-card-body">
-                        <h3 class="contact-name">David Wilson</h3>
-                        <div class="contact-info">
-                            <div class="contact-info-item">
-                                <span class="info-icon">📱</span>
-                                <span>(555) 567-8901</span>
-                            </div>
-                            <div class="contact-info-item">
-                                <span class="info-icon">✉️</span>
-                                <span>d.wilson@email.com</span>
-                            </div>
-                            <div class="contact-info-item">
-                                <span class="info-icon">📍</span>
-                                <span>American Fork, UT</span>
-                            </div>
-                        </div>
-                        <div class="contact-stats-mini">
-                            <span class="mini-stat">1 event together</span>
-                        </div>
-                    </div>
-                    <div class="contact-card-actions">
-                        <button class="btn-card" onclick="viewContact(6)">View</button>
-                        <button class="btn-card" onclick="editContact(6)">Edit</button>
-                        <button class="btn-card-danger" onclick="deleteContact(6)">Delete</button>
-                    </div>
-                </div>
                 <% } %>
             </div>
         </div>
@@ -295,6 +110,8 @@
                 <button class="modal-close" onclick="closeContactModal()">&times;</button>
             </div>
             <form id="contact-form" class="modal-form" action="/contacts/create" method="POST" enctype="multipart/form-data">
+                <input type="hidden" id="edit-contact-id" name="contactId" value="">
+
                 <div class="form-group photo-upload-group">
                     <label>Profile Photo</label>
                     <div class="photo-upload">
@@ -355,13 +172,51 @@
 
                 <div class="modal-actions">
                     <button type="button" class="btn-outline" onclick="closeContactModal()">Cancel</button>
-                    <button type="submit" class="btn-primary">Save Contact</button>
+                    <button type="submit" class="btn-primary" id="contact-submit-btn">Save Contact</button>
                 </div>
             </form>
         </div>
     </div>
 
+    <!-- View Contact Modal -->
+    <div id="view-contact-modal" class="modal">
+        <div class="modal-content modal-large">
+            <div class="modal-header">
+                <h2 id="view-contact-title">Contact Details</h2>
+                <button class="modal-close" onclick="closeViewContactModal()">&times;</button>
+            </div>
+            <div class="view-contact-content">
+                <div class="view-contact-header">
+                    <img id="view-contact-photo" src="https://via.placeholder.com/150" alt="Contact Photo" class="view-contact-photo">
+                    <div class="view-contact-info">
+                        <h3 id="view-contact-name"></h3>
+                        <div id="view-contact-details"></div>
+                    </div>
+                    <div class="view-contact-actions">
+                        <button class="btn-secondary" onclick="editContactFromView()">Edit</button>
+                    </div>
+                </div>
+
+                <div class="view-contact-events">
+                    <h4>Events Together</h4>
+                    <div id="view-contact-events-list" class="events-list">
+                        <p class="no-events">No events with this contact yet.</p>
+                    </div>
+                </div>
+
+                <div class="view-contact-notes" id="view-contact-notes-section" style="display: none;">
+                    <h4>Notes</h4>
+                    <p id="view-contact-notes-text"></p>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <script>
+        // Current contact being viewed
+        let currentViewContactId = null;
+        let currentContactData = null;
+
         // Search contacts
         function searchContacts() {
             const searchTerm = document.getElementById('contact-search').value.toLowerCase();
@@ -369,14 +224,16 @@
 
             cards.forEach(card => {
                 const name = card.querySelector('.contact-name').textContent.toLowerCase();
-                const phone = card.querySelector('.contact-info-item:nth-child(1) span:last-child').textContent.toLowerCase();
-                const email = card.querySelector('.contact-info-item:nth-child(2) span:last-child').textContent.toLowerCase();
+                const infoItems = card.querySelectorAll('.contact-info-item span:last-child');
+                let matches = name.includes(searchTerm);
 
-                if (name.includes(searchTerm) || phone.includes(searchTerm) || email.includes(searchTerm)) {
-                    card.style.display = 'block';
-                } else {
-                    card.style.display = 'none';
-                }
+                infoItems.forEach(item => {
+                    if (item.textContent.toLowerCase().includes(searchTerm)) {
+                        matches = true;
+                    }
+                });
+
+                card.style.display = matches ? 'block' : 'none';
             });
         }
 
@@ -384,8 +241,9 @@
         function filterContacts(filter) {
             document.querySelectorAll('.filter-btn').forEach(btn => btn.classList.remove('active'));
             event.target.classList.add('active');
-            console.log('Filtering by:', filter);
-            // In real implementation, filter contacts by category
+
+            // Redirect with filter parameter
+            window.location.href = `/contacts?filter=${filter === 'favorite' ? 'favorites' : filter}`;
         }
 
         // Toggle favorite
@@ -404,23 +262,154 @@
             }
         }
 
-        // Contact actions
-        function viewContact(contactId) {
-            console.log('View contact:', contactId);
-            // In real implementation, navigate to contact details page
-            alert('Contact details view would open here');
+        // View contact with events
+        async function viewContact(contactId) {
+            try {
+                const response = await fetch(`/contacts/${contactId}`);
+                const data = await response.json();
+
+                if (data.error) {
+                    alert('Error loading contact: ' + data.error);
+                    return;
+                }
+
+                currentViewContactId = contactId;
+                currentContactData = data.contact;
+
+                // Populate contact info
+                document.getElementById('view-contact-photo').src = data.contact.photo || 'https://via.placeholder.com/150';
+                document.getElementById('view-contact-name').textContent = `${data.contact.first_name} ${data.contact.last_name}`;
+
+                // Build contact details HTML
+                let detailsHtml = '';
+                if (data.contact.phone) {
+                    detailsHtml += `<div class="detail-item"><span class="detail-icon">📱</span> ${data.contact.phone}</div>`;
+                }
+                if (data.contact.email) {
+                    detailsHtml += `<div class="detail-item"><span class="detail-icon">✉️</span> ${data.contact.email}</div>`;
+                }
+                if (data.contact.street_address || data.contact.city) {
+                    let address = '';
+                    if (data.contact.street_address) address += data.contact.street_address + '<br>';
+                    if (data.contact.city) address += data.contact.city;
+                    if (data.contact.state) address += ', ' + data.contact.state;
+                    if (data.contact.zip_code) address += ' ' + data.contact.zip_code;
+                    detailsHtml += `<div class="detail-item"><span class="detail-icon">📍</span> ${address}</div>`;
+                }
+                document.getElementById('view-contact-details').innerHTML = detailsHtml;
+
+                // Build events list
+                const eventsList = document.getElementById('view-contact-events-list');
+                if (data.events && data.events.length > 0) {
+                    let eventsHtml = '';
+                    data.events.forEach(event => {
+                        const eventDate = new Date(event.event_date);
+                        const dateStr = eventDate.toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric', year: 'numeric' });
+                        const timeStr = event.start_time ? event.start_time.substring(0, 5) : '';
+                        const typeClass = event.event_type ? event.event_type.toLowerCase() : 'spiritual';
+
+                        eventsHtml += `
+                            <div class="event-item ${typeClass}" onclick="goToEvent('${event.event_date}')">
+                                <div class="event-item-info">
+                                    <div class="event-item-title">${event.title}</div>
+                                    <div class="event-item-meta">${dateStr} ${timeStr ? 'at ' + timeStr : ''}</div>
+                                </div>
+                                <div class="event-item-type">${event.event_type || 'Event'}</div>
+                            </div>
+                        `;
+                    });
+                    eventsList.innerHTML = eventsHtml;
+                } else {
+                    eventsList.innerHTML = '<p class="no-events">No events with this contact yet.</p>';
+                }
+
+                // Show notes if available
+                if (data.contact.notes) {
+                    document.getElementById('view-contact-notes-section').style.display = 'block';
+                    document.getElementById('view-contact-notes-text').textContent = data.contact.notes;
+                } else {
+                    document.getElementById('view-contact-notes-section').style.display = 'none';
+                }
+
+                // Show modal
+                document.getElementById('view-contact-modal').style.display = 'flex';
+
+            } catch (error) {
+                console.error('Error loading contact:', error);
+                alert('Error loading contact details');
+            }
         }
 
-        // Edit contact - simplified for now
-        function editContact(contactId) {
-            alert('Edit functionality: Click Delete to remove, then re-add the contact with updated info');
+        // Navigate to calendar with specific date
+        function goToEvent(eventDate) {
+            const date = new Date(eventDate);
+            const year = date.getFullYear();
+            const month = date.getMonth() + 1;
+            const day = date.getDate();
+            window.location.href = `/calendar?year=${year}&month=${month}&day=${day}&view=day`;
+        }
+
+        // Close view contact modal
+        function closeViewContactModal() {
+            document.getElementById('view-contact-modal').style.display = 'none';
+            currentViewContactId = null;
+            currentContactData = null;
+        }
+
+        // Edit from view modal
+        function editContactFromView() {
+            if (currentContactData) {
+                closeViewContactModal();
+                editContact(currentViewContactId);
+            }
+        }
+
+        // Edit contact
+        async function editContact(contactId) {
+            try {
+                const response = await fetch(`/contacts/${contactId}`);
+                const data = await response.json();
+
+                if (data.error) {
+                    alert('Error loading contact: ' + data.error);
+                    return;
+                }
+
+                const contact = data.contact;
+
+                // Update form for editing
+                document.getElementById('contact-modal').style.display = 'flex';
+                document.getElementById('contact-modal-title').textContent = 'Edit Contact';
+                document.getElementById('contact-form').action = `/contacts/update/${contactId}`;
+                document.getElementById('edit-contact-id').value = contactId;
+                document.getElementById('contact-submit-btn').textContent = 'Update Contact';
+
+                // Populate form fields
+                document.getElementById('contact-firstname').value = contact.first_name || '';
+                document.getElementById('contact-lastname').value = contact.last_name || '';
+                document.getElementById('contact-phone').value = contact.phone || '';
+                document.getElementById('contact-email').value = contact.email || '';
+                document.getElementById('contact-address').value = contact.street_address || '';
+                document.getElementById('contact-city').value = contact.city || '';
+                document.getElementById('contact-state').value = contact.state || '';
+                document.getElementById('contact-zip').value = contact.zip_code || '';
+                document.getElementById('contact-notes').value = contact.notes || '';
+                document.getElementById('photo-preview').src = contact.photo || 'https://via.placeholder.com/150';
+
+            } catch (error) {
+                console.error('Error loading contact for edit:', error);
+                alert('Error loading contact');
+            }
         }
 
         // Modal functions
         function openAddContactModal() {
             document.getElementById('contact-modal').style.display = 'flex';
             document.getElementById('contact-modal-title').textContent = 'Add New Contact';
+            document.getElementById('contact-form').action = '/contacts/create';
             document.getElementById('contact-form').reset();
+            document.getElementById('edit-contact-id').value = '';
+            document.getElementById('contact-submit-btn').textContent = 'Save Contact';
             document.getElementById('photo-preview').src = 'https://via.placeholder.com/150';
         }
 
@@ -440,21 +429,25 @@
             }
         }
 
-        // Form submission - let it submit normally to server with file upload
-        // No need to prevent default
-
         // Close modal when clicking outside
         window.onclick = function(event) {
-            const modal = document.getElementById('contact-modal');
-            if (event.target === modal) {
+            const contactModal = document.getElementById('contact-modal');
+            const viewModal = document.getElementById('view-contact-modal');
+            if (event.target === contactModal) {
                 closeContactModal();
+            }
+            if (event.target === viewModal) {
+                closeViewContactModal();
             }
         }
 
         // User dropdown toggle
-        document.querySelector('.user-menu').addEventListener('click', function(e) {
-            this.querySelector('.user-dropdown').classList.toggle('show');
-        });
+        const userMenu = document.querySelector('.user-menu');
+        if (userMenu) {
+            userMenu.addEventListener('click', function(e) {
+                this.querySelector('.user-dropdown').classList.toggle('show');
+            });
+        }
 
         document.addEventListener('click', function(e) {
             if (!e.target.closest('.user-menu')) {
@@ -463,16 +456,120 @@
                 });
             }
         });
-
-        // Add fadeOut animation
-        const style = document.createElement('style');
-        style.textContent = `
-            @keyframes fadeOut {
-                from { opacity: 1; transform: scale(1); }
-                to { opacity: 0; transform: scale(0.9); }
-            }
-        `;
-        document.head.appendChild(style);
     </script>
+
+    <style>
+        /* View Contact Modal Styles */
+        .view-contact-content {
+            padding: 20px;
+        }
+        .view-contact-header {
+            display: flex;
+            align-items: flex-start;
+            gap: 20px;
+            margin-bottom: 24px;
+            padding-bottom: 20px;
+            border-bottom: 1px solid #eee;
+        }
+        .view-contact-photo {
+            width: 120px;
+            height: 120px;
+            border-radius: 50%;
+            object-fit: cover;
+        }
+        .view-contact-info {
+            flex: 1;
+        }
+        .view-contact-info h3 {
+            margin: 0 0 12px 0;
+            font-size: 24px;
+        }
+        .detail-item {
+            margin-bottom: 8px;
+            color: #555;
+        }
+        .detail-icon {
+            margin-right: 8px;
+        }
+        .view-contact-events h4,
+        .view-contact-notes h4 {
+            margin: 0 0 12px 0;
+            color: #333;
+        }
+        .events-list {
+            max-height: 300px;
+            overflow-y: auto;
+        }
+        .event-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 12px;
+            margin-bottom: 8px;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: transform 0.2s;
+        }
+        .event-item:hover {
+            transform: translateX(4px);
+        }
+        .event-item.spiritual { background: #e8f0fe; border-left: 3px solid #4285f4; }
+        .event-item.social { background: #fef3e8; border-left: 3px solid #f5a623; }
+        .event-item.intellectual { background: #e8f5e9; border-left: 3px solid #34a853; }
+        .event-item.physical { background: #fce8e8; border-left: 3px solid #ea4335; }
+        .event-item.romantic { background: #f3e8fe; border-left: 3px solid #9c27b0; }
+        .event-item-title {
+            font-weight: 600;
+            margin-bottom: 4px;
+        }
+        .event-item-meta {
+            font-size: 12px;
+            color: #666;
+        }
+        .event-item-type {
+            font-size: 12px;
+            padding: 4px 8px;
+            background: rgba(0,0,0,0.1);
+            border-radius: 4px;
+        }
+        .no-events {
+            color: #999;
+            font-style: italic;
+            text-align: center;
+            padding: 20px;
+        }
+        .view-contact-notes {
+            margin-top: 20px;
+            padding-top: 20px;
+            border-top: 1px solid #eee;
+        }
+        .view-contact-notes p {
+            color: #555;
+            white-space: pre-wrap;
+        }
+
+        /* Empty state styles */
+        .empty-state {
+            grid-column: 1 / -1;
+            text-align: center;
+            padding: 60px 20px;
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+        }
+        .empty-state-icon {
+            font-size: 64px;
+            margin-bottom: 16px;
+        }
+        .empty-state h3 {
+            margin: 0 0 8px 0;
+            color: #333;
+            font-size: 24px;
+        }
+        .empty-state p {
+            margin: 0 0 24px 0;
+            color: #666;
+        }
+    </style>
 </body>
 </html>

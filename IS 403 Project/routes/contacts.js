@@ -52,9 +52,7 @@ router.get('/', async (req, res) => {
             .count('ce.event_id as event_count')
             .leftJoin('contact_events as ce', 'c.contact_id', 'ce.contact_id')
             .where('c.user_id', userId)
-            .groupBy('c.contact_id')
-            .orderBy('c.last_name')
-            .orderBy('c.first_name');
+            .groupBy('c.contact_id');
 
         // Add search filter
         if (search) {
@@ -65,13 +63,18 @@ router.get('/', async (req, res) => {
             });
         }
 
+        // Apply sorting based on filter
+        if (filter === 'recent') {
+            query = query.orderBy('c.created_at', 'desc').limit(10);
+        } else {
+            query = query.orderBy('c.last_name').orderBy('c.first_name');
+        }
+
         let contacts = await query;
 
-        // Apply favorite filter
+        // Apply favorite filter (post-query since we need all for alphabetical sort)
         if (filter === 'favorites') {
             contacts = contacts.filter(c => c.is_favorite);
-        } else if (filter === 'recent') {
-            contacts = contacts.slice(0, 10);
         }
 
         res.render('contacts', {
@@ -98,20 +101,36 @@ router.post('/create', upload.single('photo'), async (req, res) => {
     const userId = req.session.user.user_id;
 
     try {
+        // Validation
+        if (!firstName || !firstName.trim()) {
+            req.session.error = 'First name is required';
+            return res.redirect('/contacts');
+        }
+        if (!lastName || !lastName.trim()) {
+            req.session.error = 'Last name is required';
+            return res.redirect('/contacts');
+        }
+
+        // Basic email validation if provided
+        if (email && email.trim() && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email.trim())) {
+            req.session.error = 'Invalid email format';
+            return res.redirect('/contacts');
+        }
+
         const photo = req.file ? `/uploads/contacts/${req.file.filename}` : 'https://via.placeholder.com/150';
 
         await db('contacts').insert({
             user_id: userId,
-            first_name: firstName,
-            last_name: lastName,
-            phone,
-            email,
-            street_address: streetAddress,
-            city,
-            state,
-            zip_code: zipCode,
+            first_name: firstName.trim(),
+            last_name: lastName.trim(),
+            phone: phone ? phone.trim() : null,
+            email: email ? email.trim() : null,
+            street_address: streetAddress ? streetAddress.trim() : null,
+            city: city ? city.trim() : null,
+            state: state ? state.trim() : null,
+            zip_code: zipCode ? zipCode.trim() : null,
             photo,
-            notes
+            notes: notes ? notes.trim() : null
         });
 
         req.session.success = 'Contact created successfully';
@@ -135,8 +154,7 @@ router.get('/:id', async (req, res) => {
             .first();
 
         if (!contact) {
-            req.session.error = 'Contact not found';
-            return res.redirect('/contacts');
+            return res.status(404).json({ error: 'Contact not found' });
         }
 
         const events = await db('events as e')
@@ -166,6 +184,22 @@ router.post('/update/:id', upload.single('photo'), async (req, res) => {
     const userId = req.session.user.user_id;
 
     try {
+        // Validation
+        if (!firstName || !firstName.trim()) {
+            req.session.error = 'First name is required';
+            return res.redirect('/contacts');
+        }
+        if (!lastName || !lastName.trim()) {
+            req.session.error = 'Last name is required';
+            return res.redirect('/contacts');
+        }
+
+        // Basic email validation if provided
+        if (email && email.trim() && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email.trim())) {
+            req.session.error = 'Invalid email format';
+            return res.redirect('/contacts');
+        }
+
         // Get current contact to check if photo exists
         const currentContact = await db('contacts')
             .select('photo')
@@ -196,16 +230,16 @@ router.post('/update/:id', upload.single('photo'), async (req, res) => {
         await db('contacts')
             .where({ contact_id: id, user_id: userId })
             .update({
-                first_name: firstName,
-                last_name: lastName,
-                phone,
-                email,
-                street_address: streetAddress,
-                city,
-                state,
-                zip_code: zipCode,
+                first_name: firstName.trim(),
+                last_name: lastName.trim(),
+                phone: phone ? phone.trim() : null,
+                email: email ? email.trim() : null,
+                street_address: streetAddress ? streetAddress.trim() : null,
+                city: city ? city.trim() : null,
+                state: state ? state.trim() : null,
+                zip_code: zipCode ? zipCode.trim() : null,
                 photo,
-                notes
+                notes: notes ? notes.trim() : null
             });
 
         req.session.success = 'Contact updated successfully';
@@ -224,13 +258,18 @@ router.post('/favorite/:id', async (req, res) => {
     const userId = req.session.user.user_id;
 
     try {
-        await db('contacts')
+        const result = await db('contacts')
             .where({ contact_id: id, user_id: userId })
             .update({
                 is_favorite: db.raw('NOT is_favorite')
-            });
+            })
+            .returning('is_favorite');
 
-        res.json({ success: true });
+        if (result.length === 0) {
+            return res.status(404).json({ success: false, error: 'Contact not found' });
+        }
+
+        res.json({ success: true, is_favorite: result[0].is_favorite });
 
     } catch (error) {
         console.error('Toggle favorite error:', error);

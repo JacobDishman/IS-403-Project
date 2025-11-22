@@ -23,28 +23,28 @@
                 <div class="stat-card">
                     <div class="stat-icon">📊</div>
                     <div class="stat-info">
-                        <div class="stat-value" id="total-goals"><%= typeof stats !== 'undefined' ? stats.total : '12' %></div>
+                        <div class="stat-value"><%= stats.total %></div>
                         <div class="stat-label">Total Goals</div>
                     </div>
                 </div>
                 <div class="stat-card">
                     <div class="stat-icon">✅</div>
                     <div class="stat-info">
-                        <div class="stat-value" id="completed-goals"><%= typeof stats !== 'undefined' ? stats.completed : '5' %></div>
+                        <div class="stat-value"><%= stats.completed %></div>
                         <div class="stat-label">Completed</div>
                     </div>
                 </div>
                 <div class="stat-card">
                     <div class="stat-icon">🎯</div>
                     <div class="stat-info">
-                        <div class="stat-value" id="active-goals"><%= typeof stats !== 'undefined' ? stats.active : '7' %></div>
+                        <div class="stat-value"><%= stats.active %></div>
                         <div class="stat-label">In Progress</div>
                     </div>
                 </div>
-                <div class="stat-card">
+                <div class="stat-card clickable" onclick="window.location.href='/calendar'">
                     <div class="stat-icon">📅</div>
                     <div class="stat-info">
-                        <div class="stat-value" id="events-today"><%= typeof stats !== 'undefined' ? stats.eventstoday : '0' %></div>
+                        <div class="stat-value"><%= stats.eventstoday %></div>
                         <div class="stat-label">Events Today</div>
                     </div>
                 </div>
@@ -52,215 +52,79 @@
 
             <!-- Goals Categories Grid -->
             <div class="goals-grid">
-                <!-- Spiritual Goals -->
-                <div class="goal-category spiritual">
-                    <div class="category-header">
-                        <div class="category-icon">✝️</div>
-                        <h2 class="category-title">Spiritual</h2>
-                        <button class="btn-icon" onclick="addGoalToCategory('spiritual')">+</button>
-                    </div>
-                    <div class="category-progress">
-                        <div class="progress-bar">
-                            <div class="progress-fill" style="width: <%= typeof progress !== 'undefined' && progress.spiritual ? progress.spiritual + '%' : '70%' %>"></div>
-                        </div>
-                        <span class="progress-text"><%= typeof progress !== 'undefined' && progress.spiritual ? progress.spiritual : '70' %>% Complete</span>
-                    </div>
-                    <div class="goals-list" id="spiritual-goals">
-                        <% if (typeof goalsByCategory !== 'undefined' && goalsByCategory.Spiritual && goalsByCategory.Spiritual.length > 0) { %>
-                            <% goalsByCategory.Spiritual.forEach(function(goal) { %>
-                                <div class="goal-item <%= goal.is_completed ? 'completed' : '' %>" data-goal-id="<%= goal.goal_id %>">
-                                    <div class="goal-checkbox">
-                                        <input type="checkbox" id="goal-<%= goal.goal_id %>" <%= goal.is_completed ? 'checked' : '' %> onchange="toggleGoalComplete(<%= goal.goal_id %>, this.checked)">
-                                        <label for="goal-<%= goal.goal_id %>"></label>
-                                    </div>
-                                    <div class="goal-content">
-                                        <div class="goal-title"><%= goal.title %></div>
-                                        <div class="goal-meta">
-                                            <span class="goal-progress"><%= goal.current_count || 0 %>/<%= goal.target_count || 0 %></span>
-                                        </div>
-                                    </div>
-                                    <form action="/goals/delete/<%= goal.goal_id %>" method="POST" style="display: inline;" onsubmit="return confirm('Are you sure you want to delete this goal?')">
-                                        <button type="submit" class="btn-icon-small">🗑️</button>
-                                    </form>
-                                </div>
-                            <% }); %>
-                        <% } else { %>
-                            <div class="goal-item">
-                                <div class="goal-content">
-                                    <p style="color: #697268; font-style: italic;">No spiritual goals yet. Click + to add one!</p>
-                                </div>
-                            </div>
-                        <% } %>
-                    </div>
-                </div>
+                <% const categories = [
+                    { key: 'Spiritual', icon: '✝️', color: 'spiritual' },
+                    { key: 'Social', icon: '👥', color: 'social' },
+                    { key: 'Intellectual', icon: '📚', color: 'intellectual' },
+                    { key: 'Physical', icon: '💪', color: 'physical' },
+                    { key: 'Romantic', icon: '❤️', color: 'romantic' }
+                ]; %>
 
-                <!-- Social Goals -->
-                <div class="goal-category social">
-                    <div class="category-header">
-                        <div class="category-icon">👥</div>
-                        <h2 class="category-title">Social</h2>
-                        <button class="btn-icon" onclick="addGoalToCategory('social')">+</button>
-                    </div>
-                    <div class="category-progress">
-                        <div class="progress-bar">
-                            <div class="progress-fill" style="width: <%= typeof progress !== 'undefined' && progress.social ? progress.social + '%' : '0%' %>"></div>
+                <% categories.forEach(function(cat) { %>
+                    <div class="goal-category <%= cat.color %>">
+                        <div class="category-header">
+                            <div class="category-icon"><%= cat.icon %></div>
+                            <h2 class="category-title"><%= cat.key %></h2>
+                            <button class="btn-icon" onclick="addGoalToCategory('<%= cat.color %>')" title="Add <%= cat.key %> goal">+</button>
                         </div>
-                        <span class="progress-text"><%= typeof progress !== 'undefined' && progress.social ? progress.social : '0' %>% Complete</span>
-                    </div>
-                    <div class="goals-list" id="social-goals">
-                        <% if (typeof goalsByCategory !== 'undefined' && goalsByCategory.Social && goalsByCategory.Social.length > 0) { %>
-                            <% goalsByCategory.Social.forEach(function(goal) { %>
-                                <div class="goal-item <%= goal.is_completed ? 'completed' : '' %>" data-goal-id="<%= goal.goal_id %>">
-                                    <div class="goal-checkbox">
-                                        <input type="checkbox" id="goal-<%= goal.goal_id %>" <%= goal.is_completed ? 'checked' : '' %> onchange="toggleGoalComplete(<%= goal.goal_id %>, this.checked)">
-                                        <label for="goal-<%= goal.goal_id %>"></label>
-                                    </div>
-                                    <div class="goal-content">
-                                        <div class="goal-title"><%= goal.title %></div>
-                                        <div class="goal-meta">
-                                            <span class="goal-progress"><%= goal.current_count || 0 %>/<%= goal.target_count || 0 %></span>
+                        <div class="category-progress">
+                            <div class="progress-bar">
+                                <div class="progress-fill" style="width: <%= progress[cat.color.toLowerCase()] %>%"></div>
+                            </div>
+                            <span class="progress-text"><%= progress[cat.color.toLowerCase()] %>% Complete</span>
+                        </div>
+                        <div class="goals-list" id="<%= cat.color %>-goals">
+                            <% if (goalsByCategory[cat.key] && goalsByCategory[cat.key].length > 0) { %>
+                                <% goalsByCategory[cat.key].forEach(function(goal) { %>
+                                    <% const progressPercent = goal.target_count > 0 ? Math.round((goal.current_count / goal.target_count) * 100) : 0; %>
+                                    <div class="goal-item <%= goal.is_completed ? 'completed' : '' %>" data-goal-id="<%= goal.goal_id %>">
+                                        <div class="goal-checkbox">
+                                            <input type="checkbox" id="goal-<%= goal.goal_id %>" <%= goal.is_completed ? 'checked' : '' %> onchange="toggleGoalComplete(<%= goal.goal_id %>, this.checked)">
+                                            <label for="goal-<%= goal.goal_id %>"></label>
+                                        </div>
+                                        <div class="goal-content" onclick="viewGoalDetails(<%= goal.goal_id %>)">
+                                            <div class="goal-title"><%= goal.title %></div>
+                                            <% if (goal.target_count > 0) { %>
+                                                <div class="goal-mini-progress">
+                                                    <div class="mini-progress-bar">
+                                                        <div class="mini-progress-fill" style="width: <%= progressPercent %>%"></div>
+                                                    </div>
+                                                    <span class="goal-progress-text"><%= goal.current_count %>/<%= goal.target_count %></span>
+                                                </div>
+                                            <% } %>
+                                            <% if (goal.deadline) { %>
+                                                <div class="goal-deadline">
+                                                    <% const deadline = new Date(goal.deadline); %>
+                                                    <% const isOverdue = deadline < new Date() && !goal.is_completed; %>
+                                                    <span class="<%= isOverdue ? 'overdue' : '' %>">
+                                                        📅 <%= deadline.toLocaleDateString('en-US', { month: 'short', day: 'numeric' }) %>
+                                                    </span>
+                                                </div>
+                                            <% } %>
+                                        </div>
+                                        <div class="goal-actions">
+                                            <% if (goal.target_count > 0 && !goal.is_completed) { %>
+                                                <button class="btn-icon-small" onclick="decrementGoal(<%= goal.goal_id %>)" title="Decrease">−</button>
+                                                <button class="btn-icon-small" onclick="incrementGoal(<%= goal.goal_id %>)" title="Increase">+</button>
+                                            <% } %>
+                                            <button class="btn-icon-small" onclick="editGoal(<%= goal.goal_id %>)" title="Edit">✏️</button>
+                                            <form action="/goals/delete/<%= goal.goal_id %>" method="POST" style="display: inline;" onsubmit="return confirm('Delete this goal?')">
+                                                <button type="submit" class="btn-icon-small" title="Delete">🗑️</button>
+                                            </form>
                                         </div>
                                     </div>
-                                    <form action="/goals/delete/<%= goal.goal_id %>" method="POST" style="display: inline;" onsubmit="return confirm('Are you sure you want to delete this goal?')">
-                                        <button type="submit" class="btn-icon-small">🗑️</button>
-                                    </form>
-                                </div>
-                            <% }); %>
-                        <% } else { %>
-                            <div class="goal-item">
-                                <div class="goal-content">
-                                    <p style="color: #697268; font-style: italic;">No social goals yet. Click + to add one!</p>
-                                </div>
-                            </div>
-                        <% } %>
-                    </div>
-                </div>
-
-                <!-- Intellectual Goals -->
-                <div class="goal-category intellectual">
-                    <div class="category-header">
-                        <div class="category-icon">📚</div>
-                        <h2 class="category-title">Intellectual</h2>
-                        <button class="btn-icon" onclick="addGoalToCategory('intellectual')">+</button>
-                    </div>
-                    <div class="category-progress">
-                        <div class="progress-bar">
-                            <div class="progress-fill" style="width: <%= typeof progress !== 'undefined' && progress.intellectual ? progress.intellectual + '%' : '0%' %>"></div>
-                        </div>
-                        <span class="progress-text"><%= typeof progress !== 'undefined' && progress.intellectual ? progress.intellectual : '0' %>% Complete</span>
-                    </div>
-                    <div class="goals-list" id="intellectual-goals">
-                        <% if (typeof goalsByCategory !== 'undefined' && goalsByCategory.Intellectual && goalsByCategory.Intellectual.length > 0) { %>
-                            <% goalsByCategory.Intellectual.forEach(function(goal) { %>
-                                <div class="goal-item <%= goal.is_completed ? 'completed' : '' %>" data-goal-id="<%= goal.goal_id %>">
-                                    <div class="goal-checkbox">
-                                        <input type="checkbox" id="goal-<%= goal.goal_id %>" <%= goal.is_completed ? 'checked' : '' %> onchange="toggleGoalComplete(<%= goal.goal_id %>, this.checked)">
-                                        <label for="goal-<%= goal.goal_id %>"></label>
-                                    </div>
+                                <% }); %>
+                            <% } else { %>
+                                <div class="goal-item empty-state">
                                     <div class="goal-content">
-                                        <div class="goal-title"><%= goal.title %></div>
-                                        <div class="goal-meta">
-                                            <span class="goal-progress"><%= goal.current_count || 0 %>/<%= goal.target_count || 0 %></span>
-                                        </div>
+                                        <p>No <%= cat.key.toLowerCase() %> goals yet</p>
+                                        <button class="btn-link" onclick="addGoalToCategory('<%= cat.color %>')">+ Add your first goal</button>
                                     </div>
-                                    <form action="/goals/delete/<%= goal.goal_id %>" method="POST" style="display: inline;" onsubmit="return confirm('Are you sure you want to delete this goal?')">
-                                        <button type="submit" class="btn-icon-small">🗑️</button>
-                                    </form>
                                 </div>
-                            <% }); %>
-                        <% } else { %>
-                            <div class="goal-item">
-                                <div class="goal-content">
-                                    <p style="color: #697268; font-style: italic;">No intellectual goals yet. Click + to add one!</p>
-                                </div>
-                            </div>
-                        <% } %>
-                    </div>
-                </div>
-
-                <!-- Physical Goals -->
-                <div class="goal-category physical">
-                    <div class="category-header">
-                        <div class="category-icon">💪</div>
-                        <h2 class="category-title">Physical</h2>
-                        <button class="btn-icon" onclick="addGoalToCategory('physical')">+</button>
-                    </div>
-                    <div class="category-progress">
-                        <div class="progress-bar">
-                            <div class="progress-fill" style="width: <%= typeof progress !== 'undefined' && progress.physical ? progress.physical + '%' : '0%' %>"></div>
+                            <% } %>
                         </div>
-                        <span class="progress-text"><%= typeof progress !== 'undefined' && progress.physical ? progress.physical : '0' %>% Complete</span>
                     </div>
-                    <div class="goals-list" id="physical-goals">
-                        <% if (typeof goalsByCategory !== 'undefined' && goalsByCategory.Physical && goalsByCategory.Physical.length > 0) { %>
-                            <% goalsByCategory.Physical.forEach(function(goal) { %>
-                                <div class="goal-item <%= goal.is_completed ? 'completed' : '' %>" data-goal-id="<%= goal.goal_id %>">
-                                    <div class="goal-checkbox">
-                                        <input type="checkbox" id="goal-<%= goal.goal_id %>" <%= goal.is_completed ? 'checked' : '' %> onchange="toggleGoalComplete(<%= goal.goal_id %>, this.checked)">
-                                        <label for="goal-<%= goal.goal_id %>"></label>
-                                    </div>
-                                    <div class="goal-content">
-                                        <div class="goal-title"><%= goal.title %></div>
-                                        <div class="goal-meta">
-                                            <span class="goal-progress"><%= goal.current_count || 0 %>/<%= goal.target_count || 0 %></span>
-                                        </div>
-                                    </div>
-                                    <form action="/goals/delete/<%= goal.goal_id %>" method="POST" style="display: inline;" onsubmit="return confirm('Are you sure you want to delete this goal?')">
-                                        <button type="submit" class="btn-icon-small">🗑️</button>
-                                    </form>
-                                </div>
-                            <% }); %>
-                        <% } else { %>
-                            <div class="goal-item">
-                                <div class="goal-content">
-                                    <p style="color: #697268; font-style: italic;">No physical goals yet. Click + to add one!</p>
-                                </div>
-                            </div>
-                        <% } %>
-                    </div>
-                </div>
-
-                <!-- Romantic Goals -->
-                <div class="goal-category romantic">
-                    <div class="category-header">
-                        <div class="category-icon">❤️</div>
-                        <h2 class="category-title">Romantic</h2>
-                        <button class="btn-icon" onclick="addGoalToCategory('romantic')">+</button>
-                    </div>
-                    <div class="category-progress">
-                        <div class="progress-bar">
-                            <div class="progress-fill" style="width: <%= typeof progress !== 'undefined' && progress.romantic ? progress.romantic + '%' : '0%' %>"></div>
-                        </div>
-                        <span class="progress-text"><%= typeof progress !== 'undefined' && progress.romantic ? progress.romantic : '0' %>% Complete</span>
-                    </div>
-                    <div class="goals-list" id="romantic-goals">
-                        <% if (typeof goalsByCategory !== 'undefined' && goalsByCategory.Romantic && goalsByCategory.Romantic.length > 0) { %>
-                            <% goalsByCategory.Romantic.forEach(function(goal) { %>
-                                <div class="goal-item <%= goal.is_completed ? 'completed' : '' %>" data-goal-id="<%= goal.goal_id %>">
-                                    <div class="goal-checkbox">
-                                        <input type="checkbox" id="goal-<%= goal.goal_id %>" <%= goal.is_completed ? 'checked' : '' %> onchange="toggleGoalComplete(<%= goal.goal_id %>, this.checked)">
-                                        <label for="goal-<%= goal.goal_id %>"></label>
-                                    </div>
-                                    <div class="goal-content">
-                                        <div class="goal-title"><%= goal.title %></div>
-                                        <div class="goal-meta">
-                                            <span class="goal-progress"><%= goal.current_count || 0 %>/<%= goal.target_count || 0 %></span>
-                                        </div>
-                                    </div>
-                                    <form action="/goals/delete/<%= goal.goal_id %>" method="POST" style="display: inline;" onsubmit="return confirm('Are you sure you want to delete this goal?')">
-                                        <button type="submit" class="btn-icon-small">🗑️</button>
-                                    </form>
-                                </div>
-                            <% }); %>
-                        <% } else { %>
-                            <div class="goal-item">
-                                <div class="goal-content">
-                                    <p style="color: #697268; font-style: italic;">No romantic goals yet. Click + to add one!</p>
-                                </div>
-                            </div>
-                        <% } %>
-                    </div>
-                </div>
+                <% }); %>
             </div>
         </div>
     </main>
@@ -269,10 +133,12 @@
     <div id="goal-modal" class="modal">
         <div class="modal-content">
             <div class="modal-header">
-                <h2 id="modal-title">Add New Goal</h2>
+                <h2 id="goal-modal-title">Add New Goal</h2>
                 <button class="modal-close" onclick="closeGoalModal()">&times;</button>
             </div>
             <form id="goal-form" class="modal-form" action="/goals/create" method="POST">
+                <input type="hidden" id="edit-goal-id" name="goalId" value="">
+
                 <div class="form-group">
                     <label for="goal-category-select">Category</label>
                     <select id="goal-category-select" name="category" required>
@@ -292,9 +158,15 @@
                     <label for="goal-description">Description (Optional)</label>
                     <textarea id="goal-description" name="description" rows="3" placeholder="Add more details about this goal..."></textarea>
                 </div>
-                <div class="form-group">
-                    <label for="goal-target">Target Count</label>
-                    <input type="number" id="goal-target" name="targetCount" placeholder="e.g., 30" value="0">
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="goal-target">Target Count</label>
+                        <input type="number" id="goal-target" name="targetCount" placeholder="e.g., 30" min="0" value="1">
+                    </div>
+                    <div class="form-group" id="current-count-group" style="display: none;">
+                        <label for="goal-current">Current Progress</label>
+                        <input type="number" id="goal-current" name="currentCount" min="0" value="0">
+                    </div>
                 </div>
                 <div class="form-group">
                     <label for="goal-deadline">Deadline (Optional)</label>
@@ -302,18 +174,45 @@
                 </div>
                 <div class="modal-actions">
                     <button type="button" class="btn-outline" onclick="closeGoalModal()">Cancel</button>
-                    <button type="submit" class="btn-primary">Save Goal</button>
+                    <button type="submit" class="btn-primary" id="goal-submit-btn">Save Goal</button>
                 </div>
             </form>
         </div>
     </div>
 
+    <!-- View Goal Details Modal -->
+    <div id="goal-details-modal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 id="goal-details-title">Goal Details</h2>
+                <button class="modal-close" onclick="closeGoalDetailsModal()">&times;</button>
+            </div>
+            <div class="goal-details-content">
+                <div id="goal-details-body">
+                    <!-- Content loaded dynamically -->
+                </div>
+                <div class="modal-actions">
+                    <button type="button" class="btn-outline" onclick="closeGoalDetailsModal()">Close</button>
+                    <button type="button" class="btn-secondary" onclick="editGoalFromDetails()">Edit Goal</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <script>
+        let currentGoalId = null;
+
         // Modal functions
         function openAddGoalModal(category = '') {
             document.getElementById('goal-modal').style.display = 'flex';
-            document.getElementById('modal-title').textContent = 'Add New Goal';
+            document.getElementById('goal-modal-title').textContent = 'Add New Goal';
+            document.getElementById('goal-form').action = '/goals/create';
             document.getElementById('goal-form').reset();
+            document.getElementById('edit-goal-id').value = '';
+            document.getElementById('goal-submit-btn').textContent = 'Save Goal';
+            document.getElementById('current-count-group').style.display = 'none';
+            document.getElementById('goal-target').value = '1';
+
             if (category) {
                 const capitalizedCategory = category.charAt(0).toUpperCase() + category.slice(1);
                 document.getElementById('goal-category-select').value = capitalizedCategory;
@@ -328,6 +227,122 @@
             document.getElementById('goal-modal').style.display = 'none';
         }
 
+        // Edit goal
+        async function editGoal(goalId) {
+            try {
+                const response = await fetch(`/goals/${goalId}`);
+                const data = await response.json();
+
+                if (data.error) {
+                    alert('Error loading goal: ' + data.error);
+                    return;
+                }
+
+                const goal = data.goal;
+                currentGoalId = goalId;
+
+                // Update form for editing
+                document.getElementById('goal-modal').style.display = 'flex';
+                document.getElementById('goal-modal-title').textContent = 'Edit Goal';
+                document.getElementById('goal-form').action = `/goals/update/${goalId}`;
+                document.getElementById('edit-goal-id').value = goalId;
+                document.getElementById('goal-submit-btn').textContent = 'Update Goal';
+                document.getElementById('current-count-group').style.display = 'block';
+
+                // Populate form fields
+                document.getElementById('goal-category-select').value = goal.category;
+                document.getElementById('goal-title').value = goal.title;
+                document.getElementById('goal-description').value = goal.description || '';
+                document.getElementById('goal-target').value = goal.target_count || 0;
+                document.getElementById('goal-current').value = goal.current_count || 0;
+                document.getElementById('goal-deadline').value = goal.deadline ? goal.deadline.split('T')[0] : '';
+
+            } catch (error) {
+                console.error('Error loading goal:', error);
+                alert('Error loading goal');
+            }
+        }
+
+        // View goal details
+        async function viewGoalDetails(goalId) {
+            try {
+                const response = await fetch(`/goals/${goalId}`);
+                const data = await response.json();
+
+                if (data.error) {
+                    alert('Error loading goal: ' + data.error);
+                    return;
+                }
+
+                const goal = data.goal;
+                currentGoalId = goalId;
+
+                const progressPercent = goal.target_count > 0 ? Math.round((goal.current_count / goal.target_count) * 100) : 0;
+
+                let html = `
+                    <div class="goal-detail-header">
+                        <span class="goal-detail-category ${goal.category.toLowerCase()}">${goal.category}</span>
+                        ${goal.is_completed ? '<span class="goal-detail-completed">✅ Completed</span>' : ''}
+                    </div>
+                    <h3 class="goal-detail-title">${goal.title}</h3>
+                `;
+
+                if (goal.description) {
+                    html += `<p class="goal-detail-description">${goal.description}</p>`;
+                }
+
+                if (goal.target_count > 0) {
+                    html += `
+                        <div class="goal-detail-progress">
+                            <div class="detail-progress-bar">
+                                <div class="detail-progress-fill" style="width: ${progressPercent}%"></div>
+                            </div>
+                            <div class="detail-progress-text">
+                                <span>${goal.current_count} / ${goal.target_count}</span>
+                                <span>${progressPercent}%</span>
+                            </div>
+                        </div>
+                    `;
+                }
+
+                if (goal.deadline) {
+                    const deadline = new Date(goal.deadline);
+                    const isOverdue = deadline < new Date() && !goal.is_completed;
+                    html += `
+                        <div class="goal-detail-deadline ${isOverdue ? 'overdue' : ''}">
+                            📅 Deadline: ${deadline.toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric', year: 'numeric' })}
+                            ${isOverdue ? ' (Overdue)' : ''}
+                        </div>
+                    `;
+                }
+
+                html += `
+                    <div class="goal-detail-tip">
+                        <strong>Tip:</strong> Create events with the "${goal.category}" type to automatically track progress toward this goal!
+                    </div>
+                `;
+
+                document.getElementById('goal-details-title').textContent = 'Goal Details';
+                document.getElementById('goal-details-body').innerHTML = html;
+                document.getElementById('goal-details-modal').style.display = 'flex';
+
+            } catch (error) {
+                console.error('Error loading goal:', error);
+            }
+        }
+
+        function closeGoalDetailsModal() {
+            document.getElementById('goal-details-modal').style.display = 'none';
+            currentGoalId = null;
+        }
+
+        function editGoalFromDetails() {
+            if (currentGoalId) {
+                closeGoalDetailsModal();
+                editGoal(currentGoalId);
+            }
+        }
+
         // Toggle goal completion
         async function toggleGoalComplete(goalId, isCompleted) {
             try {
@@ -340,16 +355,6 @@
                 });
 
                 if (response.ok) {
-                    // Update UI
-                    const goalItem = document.querySelector(`[data-goal-id="${goalId}"]`);
-                    if (goalItem) {
-                        if (isCompleted) {
-                            goalItem.classList.add('completed');
-                        } else {
-                            goalItem.classList.remove('completed');
-                        }
-                    }
-                    // Reload to update statistics
                     location.reload();
                 }
             } catch (error) {
@@ -358,13 +363,275 @@
             }
         }
 
-        // Close modal when clicking outside
-        window.onclick = function(event) {
-            const modal = document.getElementById('goal-modal');
-            if (event.target === modal) {
-                closeGoalModal();
+        // Increment goal progress
+        async function incrementGoal(goalId) {
+            try {
+                const response = await fetch(`/goals/increment/${goalId}`, {
+                    method: 'POST'
+                });
+
+                if (response.ok) {
+                    const data = await response.json();
+                    if (data.is_completed) {
+                        alert('Congratulations! Goal completed!');
+                    }
+                    location.reload();
+                }
+            } catch (error) {
+                console.error('Error incrementing goal:', error);
             }
         }
+
+        // Decrement goal progress
+        async function decrementGoal(goalId) {
+            try {
+                const response = await fetch(`/goals/decrement/${goalId}`, {
+                    method: 'POST'
+                });
+
+                if (response.ok) {
+                    location.reload();
+                }
+            } catch (error) {
+                console.error('Error decrementing goal:', error);
+            }
+        }
+
+        // Close modal when clicking outside
+        window.onclick = function(event) {
+            const goalModal = document.getElementById('goal-modal');
+            const detailsModal = document.getElementById('goal-details-modal');
+            if (event.target === goalModal) {
+                closeGoalModal();
+            }
+            if (event.target === detailsModal) {
+                closeGoalDetailsModal();
+            }
+        }
+
+        // User dropdown toggle
+        const userMenu = document.querySelector('.user-menu');
+        if (userMenu) {
+            userMenu.addEventListener('click', function(e) {
+                this.querySelector('.user-dropdown').classList.toggle('show');
+            });
+        }
+
+        document.addEventListener('click', function(e) {
+            if (!e.target.closest('.user-menu')) {
+                document.querySelectorAll('.user-dropdown').forEach(dropdown => {
+                    dropdown.classList.remove('show');
+                });
+            }
+        });
     </script>
+
+    <style>
+        /* Stats card clickable */
+        .stat-card.clickable {
+            cursor: pointer;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+        .stat-card.clickable:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+        }
+
+        /* Goal item improvements */
+        .goal-item {
+            display: flex;
+            align-items: flex-start;
+            gap: 12px;
+            padding: 12px;
+            border-radius: 8px;
+            margin-bottom: 8px;
+            background: rgba(255,255,255,0.5);
+            transition: all 0.2s;
+        }
+        .goal-item:hover {
+            background: rgba(255,255,255,0.8);
+        }
+        .goal-item.completed {
+            opacity: 0.6;
+        }
+        .goal-item.completed .goal-title {
+            text-decoration: line-through;
+        }
+        .goal-item.empty-state {
+            justify-content: center;
+            text-align: center;
+            color: #697268;
+        }
+        .goal-item.empty-state p {
+            margin: 0 0 8px 0;
+            font-style: italic;
+        }
+
+        .goal-content {
+            flex: 1;
+            cursor: pointer;
+        }
+        .goal-title {
+            font-weight: 600;
+            margin-bottom: 4px;
+        }
+
+        /* Mini progress bar */
+        .goal-mini-progress {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin-top: 4px;
+        }
+        .mini-progress-bar {
+            flex: 1;
+            height: 4px;
+            background: rgba(0,0,0,0.1);
+            border-radius: 2px;
+            overflow: hidden;
+        }
+        .mini-progress-fill {
+            height: 100%;
+            background: currentColor;
+            border-radius: 2px;
+            transition: width 0.3s;
+        }
+        .goal-progress-text {
+            font-size: 11px;
+            color: #666;
+            white-space: nowrap;
+        }
+
+        /* Goal deadline */
+        .goal-deadline {
+            font-size: 11px;
+            color: #666;
+            margin-top: 4px;
+        }
+        .goal-deadline .overdue {
+            color: #ea4335;
+            font-weight: 600;
+        }
+
+        /* Goal actions */
+        .goal-actions {
+            display: flex;
+            gap: 4px;
+            opacity: 0;
+            transition: opacity 0.2s;
+        }
+        .goal-item:hover .goal-actions {
+            opacity: 1;
+        }
+        .btn-icon-small {
+            padding: 4px 8px;
+            font-size: 12px;
+            background: none;
+            border: none;
+            cursor: pointer;
+            border-radius: 4px;
+        }
+        .btn-icon-small:hover {
+            background: rgba(0,0,0,0.1);
+        }
+
+        /* Button link */
+        .btn-link {
+            background: none;
+            border: none;
+            color: #2ec0f9;
+            cursor: pointer;
+            font-size: 13px;
+        }
+        .btn-link:hover {
+            text-decoration: underline;
+        }
+
+        /* Goal details modal */
+        .goal-detail-header {
+            display: flex;
+            gap: 8px;
+            margin-bottom: 12px;
+        }
+        .goal-detail-category {
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 600;
+        }
+        .goal-detail-category.spiritual { background: #e8f0fe; color: #4285f4; }
+        .goal-detail-category.social { background: #fef3e8; color: #f5a623; }
+        .goal-detail-category.intellectual { background: #e8f5e9; color: #34a853; }
+        .goal-detail-category.physical { background: #fce8e8; color: #ea4335; }
+        .goal-detail-category.romantic { background: #f3e8fe; color: #9c27b0; }
+
+        .goal-detail-completed {
+            padding: 4px 12px;
+            background: #e8f5e9;
+            color: #34a853;
+            border-radius: 20px;
+            font-size: 12px;
+        }
+
+        .goal-detail-title {
+            margin: 0 0 12px 0;
+            font-size: 20px;
+        }
+        .goal-detail-description {
+            color: #555;
+            margin-bottom: 16px;
+            white-space: pre-wrap;
+        }
+
+        .goal-detail-progress {
+            margin-bottom: 16px;
+        }
+        .detail-progress-bar {
+            height: 8px;
+            background: #e0e0e0;
+            border-radius: 4px;
+            overflow: hidden;
+            margin-bottom: 8px;
+        }
+        .detail-progress-fill {
+            height: 100%;
+            background: #2ec0f9;
+            border-radius: 4px;
+        }
+        .detail-progress-text {
+            display: flex;
+            justify-content: space-between;
+            font-size: 14px;
+            color: #666;
+        }
+
+        .goal-detail-deadline {
+            padding: 12px;
+            background: #f5f5f5;
+            border-radius: 8px;
+            margin-bottom: 16px;
+        }
+        .goal-detail-deadline.overdue {
+            background: #fce8e8;
+            color: #ea4335;
+        }
+
+        .goal-detail-tip {
+            padding: 12px;
+            background: #e8f0fe;
+            border-radius: 8px;
+            font-size: 13px;
+            color: #4285f4;
+        }
+
+        /* Form row */
+        .form-row {
+            display: flex;
+            gap: 16px;
+        }
+        .form-row .form-group {
+            flex: 1;
+        }
+    </style>
 </body>
 </html>

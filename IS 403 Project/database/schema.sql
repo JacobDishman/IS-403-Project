@@ -44,16 +44,19 @@ CREATE TABLE contacts (
 CREATE TABLE events (
     event_id SERIAL PRIMARY KEY,
     user_id INT REFERENCES users(user_id) ON DELETE CASCADE,
+    goal_id INT REFERENCES goals(goal_id) ON DELETE SET NULL,
     title VARCHAR(100) NOT NULL,
     event_date DATE NOT NULL,
     start_time TIME NOT NULL,
     end_time TIME,
-    event_type VARCHAR(50),
+    event_type VARCHAR(50) CHECK (event_type IN ('Spiritual', 'Social', 'Intellectual', 'Physical', 'Romantic')),
     location VARCHAR(200),
     notes TEXT,
     reminder BOOLEAN DEFAULT FALSE,
+    is_completed BOOLEAN DEFAULT FALSE,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    CONSTRAINT valid_time_range CHECK (end_time IS NULL OR end_time >= start_time)
 );
 
 -- Goals Table

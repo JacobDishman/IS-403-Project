@@ -8,6 +8,12 @@ dotenv.config();
 
 const app = express();
 const PORT = process.env.PORT || 3000;
+const isProduction = process.env.NODE_ENV === 'production';
+
+// Trust proxy for AWS Elastic Beanstalk
+if (isProduction) {
+    app.set('trust proxy', 1);
+}
 
 // Middleware
 app.use(express.urlencoded({ extended: true }));
@@ -21,7 +27,10 @@ app.use(session({
     resave: false,
     saveUninitialized: false,
     cookie: {
-        maxAge: 1000 * 60 * 60 * 24 * 7 // 1 week
+        maxAge: 1000 * 60 * 60 * 24 * 7, // 1 week
+        secure: isProduction, // HTTPS only in production
+        httpOnly: true, // Prevent XSS
+        sameSite: 'lax' // CSRF protection
     }
 }));
 
@@ -38,6 +47,11 @@ app.use((req, res, next) => {
     delete req.session.error;
     delete req.session.success;
     next();
+});
+
+// Healthcheck endpoint for AWS ELB
+app.get('/health', (req, res) => {
+    res.status(200).json({ status: 'healthy', timestamp: new Date().toISOString() });
 });
 
 // Import routes
