@@ -16,6 +16,9 @@
   ],
   "author": "Noah Blake, Ethan Wood, Jacob Dishman, George Summerill",
   "license": "ISC",
+  "engines": {
+    "node": ">=18.0.0"
+  },
   "dependencies": {
     "bcrypt": "^5.1.1",
     "dotenv": "^16.3.1",
