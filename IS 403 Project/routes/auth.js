@@ -61,16 +61,18 @@ router.get('/signup', requireGuest, (req, res) => {
 
 // Handle login
 router.post('/login', requireGuest, async (req, res) => {
-    const { email, password, remember } = req.body;
+    const { identifier, password, remember } = req.body;
 
     try {
-        // Find user by email (normalize to lowercase)
+        // Find user by email or username (normalize to lowercase)
+        const searchTerm = identifier.trim().toLowerCase();
         const user = await db('users')
-            .where({ email: email.trim().toLowerCase() })
+            .where({ email: searchTerm })
+            .orWhere({ username: searchTerm })
             .first();
 
         if (!user) {
-            req.session.error = 'Invalid email or password';
+            req.session.error = 'Invalid username/email or password';
             return res.redirect('/login');
         }
 
@@ -78,7 +80,7 @@ router.post('/login', requireGuest, async (req, res) => {
         const match = await bcrypt.compare(password, user.password_hash);
 
         if (!match) {
-            req.session.error = 'Invalid email or password';
+            req.session.error = 'Invalid username/email or password';
             return res.redirect('/login');
         }
 

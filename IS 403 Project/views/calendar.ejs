@@ -89,47 +89,6 @@
                 </div>
             </div>
 
-            <!-- Today's Schedule -->
-            <div class="todays-schedule">
-                <h3>Today's Schedule</h3>
-                <div class="schedule-list" id="todays-events">
-                    <% if (typeof todayEvents !== 'undefined' && todayEvents.length > 0) { %>
-                        <% todayEvents.forEach(function(event) { %>
-                            <div class="schedule-event <%= event.event_type ? event.event_type.toLowerCase() : 'spiritual' %>" draggable="true" ondragstart="dragEvent(event)" data-event-id="<%= event.event_id %>">
-                                <div class="event-time-badge"><%= event.start_time ? event.start_time.substring(0, 5) : '' %></div>
-                                <div class="event-details">
-                                    <div class="event-title"><%= event.title %></div>
-                                    <div class="event-meta">
-                                        <span class="event-type">
-                                            <% if (event.event_type === 'Spiritual') { %>✝️
-                                            <% } else if (event.event_type === 'Social') { %>👥
-                                            <% } else if (event.event_type === 'Intellectual') { %>📚
-                                            <% } else if (event.event_type === 'Physical') { %>💪
-                                            <% } else if (event.event_type === 'Romantic') { %>❤️
-                                            <% } %> <%= event.event_type %>
-                                        </span>
-                                        <% if (event.contacts && event.contacts.length > 0) { %>
-                                            <span class="event-contact"><%= event.contacts[0].first_name %> <%= event.contacts[0].last_name %></span>
-                                        <% } else { %>
-                                            <span class="event-contact">Personal</span>
-                                        <% } %>
-                                    </div>
-                                </div>
-                                <div class="event-actions">
-                                    <button type="button" class="btn-icon-small" onclick="editEvent(<%= event.event_id %>)">✏️</button>
-                                    <form action="/calendar/delete/<%= event.event_id %>" method="POST" style="display: inline;" onsubmit="return confirm('Are you sure you want to delete this event?')">
-                                        <button type="submit" class="btn-icon-small">🗑️</button>
-                                    </form>
-                                </div>
-                            </div>
-                        <% }); %>
-                    <% } else { %>
-                        <div class="schedule-event" style="justify-content: center;">
-                            <p style="color: #697268; font-style: italic;">No events scheduled for today. Click + Add Event to create one!</p>
-                        </div>
-                    <% } %>
-                </div>
-            </div>
         </div>
     </main>
 
@@ -494,11 +453,50 @@
         }
 
         function dropEventWeek(e, dayIndex) {
-            dropEvent(e);
+            e.preventDefault();
+            e.currentTarget.style.backgroundColor = '';
+            if (draggedEventId) {
+                // Calculate the date for this day column
+                const selectedDate = new Date(currentYear, currentMonth - 1, currentDay);
+                const dayOfWeek = selectedDate.getDay();
+                const weekStart = new Date(selectedDate);
+                weekStart.setDate(selectedDate.getDate() - dayOfWeek);
+
+                const targetDate = new Date(weekStart);
+                targetDate.setDate(weekStart.getDate() + dayIndex);
+                const newDate = targetDate.toISOString().split('T')[0];
+
+                moveEvent(draggedEventId, newDate);
+                draggedEventId = null;
+            }
         }
 
         function dropEventDay(e, hour) {
-            dropEvent(e);
+            e.preventDefault();
+            e.currentTarget.style.backgroundColor = '';
+            if (draggedEventId) {
+                const newDate = `${currentYear}-${String(currentMonth).padStart(2, '0')}-${String(currentDay).padStart(2, '0')}`;
+                moveEvent(draggedEventId, newDate);
+                draggedEventId = null;
+            }
+        }
+
+        async function moveEvent(eventId, newDate) {
+            try {
+                const response = await fetch(`/calendar/move/${eventId}`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ newDate })
+                });
+                const result = await response.json();
+                if (result.success) {
+                    window.location.reload();
+                } else {
+                    alert('Error moving event: ' + (result.error || 'Unknown error'));
+                }
+            } catch (err) {
+                alert('Error moving event');
+            }
         }
 
         document.addEventListener('dragend', (e) => {

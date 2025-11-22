@@ -51,7 +51,7 @@
                         <div class="contact-card" data-contact-id="<%= contact.contact_id %>">
                             <div class="contact-card-header">
                                 <img src="<%= contact.photo || 'https://via.placeholder.com/100' %>" alt="<%= contact.first_name %> <%= contact.last_name %>" class="contact-photo">
-                                <button class="favorite-btn" onclick="toggleFavorite(<%= contact.contact_id %>)">
+                                <button class="favorite-btn" onclick="toggleFavorite(event, <%= contact.contact_id %>)">
                                     <%= contact.is_favorite ? '⭐' : '☆' %>
                                 </button>
                             </div>
@@ -247,15 +247,27 @@
         }
 
         // Toggle favorite
-        async function toggleFavorite(contactId) {
+        async function toggleFavorite(e, contactId) {
+            e.stopPropagation();
             try {
                 const response = await fetch(`/contacts/favorite/${contactId}`, {
                     method: 'POST'
                 });
 
                 if (response.ok) {
-                    const btn = event.target;
-                    btn.textContent = btn.textContent === '⭐' ? '☆' : '⭐';
+                    const data = await response.json();
+                    const btn = e.target;
+                    btn.textContent = data.is_favorite ? '⭐' : '☆';
+                    // Update the stats
+                    const favCount = document.querySelectorAll('.favorite-btn').length;
+                    let currentFavs = 0;
+                    document.querySelectorAll('.favorite-btn').forEach(b => {
+                        if (b.textContent.trim() === '⭐') currentFavs++;
+                    });
+                    const statItems = document.querySelectorAll('.stat-number');
+                    if (statItems[1]) {
+                        statItems[1].textContent = currentFavs;
+                    }
                 }
             } catch (error) {
                 console.error('Error toggling favorite:', error);

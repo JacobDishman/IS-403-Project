@@ -31,9 +31,51 @@
     </div>
 </nav>
 
+<style>
+    .user-menu {
+        position: relative;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+    }
+    .user-dropdown {
+        display: none;
+        position: absolute;
+        top: 100%;
+        right: 0;
+        background: white;
+        border-radius: 8px;
+        box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+        min-width: 150px;
+        z-index: 1000;
+        margin-top: 8px;
+    }
+    .user-dropdown.show {
+        display: block;
+    }
+    .user-dropdown a {
+        display: block;
+        padding: 12px 16px;
+        color: #333;
+        text-decoration: none;
+        transition: background 0.2s;
+    }
+    .user-dropdown a:hover {
+        background: #f5f5f5;
+    }
+    .user-dropdown a:first-child {
+        border-radius: 8px 8px 0 0;
+    }
+    .user-dropdown a:last-child {
+        border-radius: 0 0 8px 8px;
+    }
+</style>
+
 <script>
     // User dropdown toggle
     document.querySelector('.user-menu').addEventListener('click', function(e) {
+        e.stopPropagation();
         this.querySelector('.user-dropdown').classList.toggle('show');
     });
 
