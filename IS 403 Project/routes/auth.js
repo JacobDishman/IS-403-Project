@@ -57,9 +57,9 @@ router.post('/login', requireGuest, async (req, res) => {
     const { email, password, remember } = req.body;
 
     try {
-        // Find user by email
+        // Find user by email (normalize to lowercase)
         const user = await db('users')
-            .where({ email })
+            .where({ email: email.trim().toLowerCase() })
             .first();
 
         if (!user) {
@@ -112,6 +112,18 @@ router.post('/signup', requireGuest, async (req, res) => {
             return res.redirect('/login#signup');
         }
 
+        // Email format validation
+        if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email.trim())) {
+            req.session.error = 'Invalid email format';
+            return res.redirect('/login#signup');
+        }
+
+        // Username validation (alphanumeric, underscores, 3-30 chars)
+        if (!/^[a-zA-Z0-9_]{3,30}$/.test(username.trim())) {
+            req.session.error = 'Username must be 3-30 characters and contain only letters, numbers, and underscores';
+            return res.redirect('/login#signup');
+        }
+
         if (password !== confirmPassword) {
             req.session.error = 'Passwords do not match';
             return res.redirect('/login#signup');
@@ -140,12 +152,12 @@ router.post('/signup', requireGuest, async (req, res) => {
         // Insert new user
         const [newUser] = await db('users')
             .insert({
-                first_name: firstName,
-                last_name: lastName,
-                email,
-                username,
+                first_name: firstName.trim(),
+                last_name: lastName.trim(),
+                email: email.trim().toLowerCase(),
+                username: username.trim().toLowerCase(),
                 password_hash,
-                mission: mission || null
+                mission: mission ? mission.trim() : null
             })
             .returning(['user_id', 'first_name', 'last_name', 'email', 'username', 'mission', 'profile_photo']);
 
