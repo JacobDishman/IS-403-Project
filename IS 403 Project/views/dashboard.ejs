@@ -1,0 +1,370 @@
+<%- include('partials/header', {pageTitle: 'Goals Dashboard - Cal-Endure to the End'}) %>
+<body class="app-page">
+    <%- include('partials/app-navbar', {currentPage: 'dashboard'}) %>
+
+    <!-- Main Content -->
+    <main class="app-main">
+        <div class="app-container">
+            <!-- Page Header -->
+            <header class="page-header">
+                <div>
+                    <h1 class="page-title">Your Goals</h1>
+                    <p class="page-subtitle">Track your progress across all areas of life</p>
+                </div>
+                <div class="header-actions">
+                    <button class="btn-primary" onclick="openAddGoalModal()">
+                        <span>+ Add Goal</span>
+                    </button>
+                </div>
+            </header>
+
+            <!-- Goals Overview Stats -->
+            <div class="stats-cards">
+                <div class="stat-card">
+                    <div class="stat-icon">📊</div>
+                    <div class="stat-info">
+                        <div class="stat-value" id="total-goals"><%= typeof stats !== 'undefined' ? stats.total : '12' %></div>
+                        <div class="stat-label">Total Goals</div>
+                    </div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon">✅</div>
+                    <div class="stat-info">
+                        <div class="stat-value" id="completed-goals"><%= typeof stats !== 'undefined' ? stats.completed : '5' %></div>
+                        <div class="stat-label">Completed</div>
+                    </div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon">🎯</div>
+                    <div class="stat-info">
+                        <div class="stat-value" id="active-goals"><%= typeof stats !== 'undefined' ? stats.active : '7' %></div>
+                        <div class="stat-label">In Progress</div>
+                    </div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon">📅</div>
+                    <div class="stat-info">
+                        <div class="stat-value" id="events-today"><%= typeof stats !== 'undefined' ? stats.eventstoday : '0' %></div>
+                        <div class="stat-label">Events Today</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Goals Categories Grid -->
+            <div class="goals-grid">
+                <!-- Spiritual Goals -->
+                <div class="goal-category spiritual">
+                    <div class="category-header">
+                        <div class="category-icon">✝️</div>
+                        <h2 class="category-title">Spiritual</h2>
+                        <button class="btn-icon" onclick="addGoalToCategory('spiritual')">+</button>
+                    </div>
+                    <div class="category-progress">
+                        <div class="progress-bar">
+                            <div class="progress-fill" style="width: <%= typeof progress !== 'undefined' && progress.spiritual ? progress.spiritual + '%' : '70%' %>"></div>
+                        </div>
+                        <span class="progress-text"><%= typeof progress !== 'undefined' && progress.spiritual ? progress.spiritual : '70' %>% Complete</span>
+                    </div>
+                    <div class="goals-list" id="spiritual-goals">
+                        <% if (typeof goalsByCategory !== 'undefined' && goalsByCategory.Spiritual && goalsByCategory.Spiritual.length > 0) { %>
+                            <% goalsByCategory.Spiritual.forEach(function(goal) { %>
+                                <div class="goal-item <%= goal.is_completed ? 'completed' : '' %>" data-goal-id="<%= goal.goal_id %>">
+                                    <div class="goal-checkbox">
+                                        <input type="checkbox" id="goal-<%= goal.goal_id %>" <%= goal.is_completed ? 'checked' : '' %> onchange="toggleGoalComplete(<%= goal.goal_id %>, this.checked)">
+                                        <label for="goal-<%= goal.goal_id %>"></label>
+                                    </div>
+                                    <div class="goal-content">
+                                        <div class="goal-title"><%= goal.title %></div>
+                                        <div class="goal-meta">
+                                            <span class="goal-progress"><%= goal.current_count || 0 %>/<%= goal.target_count || 0 %></span>
+                                        </div>
+                                    </div>
+                                    <form action="/goals/delete/<%= goal.goal_id %>" method="POST" style="display: inline;" onsubmit="return confirm('Are you sure you want to delete this goal?')">
+                                        <button type="submit" class="btn-icon-small">🗑️</button>
+                                    </form>
+                                </div>
+                            <% }); %>
+                        <% } else { %>
+                            <div class="goal-item">
+                                <div class="goal-content">
+                                    <p style="color: #697268; font-style: italic;">No spiritual goals yet. Click + to add one!</p>
+                                </div>
+                            </div>
+                        <% } %>
+                    </div>
+                </div>
+
+                <!-- Social Goals -->
+                <div class="goal-category social">
+                    <div class="category-header">
+                        <div class="category-icon">👥</div>
+                        <h2 class="category-title">Social</h2>
+                        <button class="btn-icon" onclick="addGoalToCategory('social')">+</button>
+                    </div>
+                    <div class="category-progress">
+                        <div class="progress-bar">
+                            <div class="progress-fill" style="width: <%= typeof progress !== 'undefined' && progress.social ? progress.social + '%' : '0%' %>"></div>
+                        </div>
+                        <span class="progress-text"><%= typeof progress !== 'undefined' && progress.social ? progress.social : '0' %>% Complete</span>
+                    </div>
+                    <div class="goals-list" id="social-goals">
+                        <% if (typeof goalsByCategory !== 'undefined' && goalsByCategory.Social && goalsByCategory.Social.length > 0) { %>
+                            <% goalsByCategory.Social.forEach(function(goal) { %>
+                                <div class="goal-item <%= goal.is_completed ? 'completed' : '' %>" data-goal-id="<%= goal.goal_id %>">
+                                    <div class="goal-checkbox">
+                                        <input type="checkbox" id="goal-<%= goal.goal_id %>" <%= goal.is_completed ? 'checked' : '' %> onchange="toggleGoalComplete(<%= goal.goal_id %>, this.checked)">
+                                        <label for="goal-<%= goal.goal_id %>"></label>
+                                    </div>
+                                    <div class="goal-content">
+                                        <div class="goal-title"><%= goal.title %></div>
+                                        <div class="goal-meta">
+                                            <span class="goal-progress"><%= goal.current_count || 0 %>/<%= goal.target_count || 0 %></span>
+                                        </div>
+                                    </div>
+                                    <form action="/goals/delete/<%= goal.goal_id %>" method="POST" style="display: inline;" onsubmit="return confirm('Are you sure you want to delete this goal?')">
+                                        <button type="submit" class="btn-icon-small">🗑️</button>
+                                    </form>
+                                </div>
+                            <% }); %>
+                        <% } else { %>
+                            <div class="goal-item">
+                                <div class="goal-content">
+                                    <p style="color: #697268; font-style: italic;">No social goals yet. Click + to add one!</p>
+                                </div>
+                            </div>
+                        <% } %>
+                    </div>
+                </div>
+
+                <!-- Intellectual Goals -->
+                <div class="goal-category intellectual">
+                    <div class="category-header">
+                        <div class="category-icon">📚</div>
+                        <h2 class="category-title">Intellectual</h2>
+                        <button class="btn-icon" onclick="addGoalToCategory('intellectual')">+</button>
+                    </div>
+                    <div class="category-progress">
+                        <div class="progress-bar">
+                            <div class="progress-fill" style="width: <%= typeof progress !== 'undefined' && progress.intellectual ? progress.intellectual + '%' : '0%' %>"></div>
+                        </div>
+                        <span class="progress-text"><%= typeof progress !== 'undefined' && progress.intellectual ? progress.intellectual : '0' %>% Complete</span>
+                    </div>
+                    <div class="goals-list" id="intellectual-goals">
+                        <% if (typeof goalsByCategory !== 'undefined' && goalsByCategory.Intellectual && goalsByCategory.Intellectual.length > 0) { %>
+                            <% goalsByCategory.Intellectual.forEach(function(goal) { %>
+                                <div class="goal-item <%= goal.is_completed ? 'completed' : '' %>" data-goal-id="<%= goal.goal_id %>">
+                                    <div class="goal-checkbox">
+                                        <input type="checkbox" id="goal-<%= goal.goal_id %>" <%= goal.is_completed ? 'checked' : '' %> onchange="toggleGoalComplete(<%= goal.goal_id %>, this.checked)">
+                                        <label for="goal-<%= goal.goal_id %>"></label>
+                                    </div>
+                                    <div class="goal-content">
+                                        <div class="goal-title"><%= goal.title %></div>
+                                        <div class="goal-meta">
+                                            <span class="goal-progress"><%= goal.current_count || 0 %>/<%= goal.target_count || 0 %></span>
+                                        </div>
+                                    </div>
+                                    <form action="/goals/delete/<%= goal.goal_id %>" method="POST" style="display: inline;" onsubmit="return confirm('Are you sure you want to delete this goal?')">
+                                        <button type="submit" class="btn-icon-small">🗑️</button>
+                                    </form>
+                                </div>
+                            <% }); %>
+                        <% } else { %>
+                            <div class="goal-item">
+                                <div class="goal-content">
+                                    <p style="color: #697268; font-style: italic;">No intellectual goals yet. Click + to add one!</p>
+                                </div>
+                            </div>
+                        <% } %>
+                    </div>
+                </div>
+
+                <!-- Physical Goals -->
+                <div class="goal-category physical">
+                    <div class="category-header">
+                        <div class="category-icon">💪</div>
+                        <h2 class="category-title">Physical</h2>
+                        <button class="btn-icon" onclick="addGoalToCategory('physical')">+</button>
+                    </div>
+                    <div class="category-progress">
+                        <div class="progress-bar">
+                            <div class="progress-fill" style="width: <%= typeof progress !== 'undefined' && progress.physical ? progress.physical + '%' : '0%' %>"></div>
+                        </div>
+                        <span class="progress-text"><%= typeof progress !== 'undefined' && progress.physical ? progress.physical : '0' %>% Complete</span>
+                    </div>
+                    <div class="goals-list" id="physical-goals">
+                        <% if (typeof goalsByCategory !== 'undefined' && goalsByCategory.Physical && goalsByCategory.Physical.length > 0) { %>
+                            <% goalsByCategory.Physical.forEach(function(goal) { %>
+                                <div class="goal-item <%= goal.is_completed ? 'completed' : '' %>" data-goal-id="<%= goal.goal_id %>">
+                                    <div class="goal-checkbox">
+                                        <input type="checkbox" id="goal-<%= goal.goal_id %>" <%= goal.is_completed ? 'checked' : '' %> onchange="toggleGoalComplete(<%= goal.goal_id %>, this.checked)">
+                                        <label for="goal-<%= goal.goal_id %>"></label>
+                                    </div>
+                                    <div class="goal-content">
+                                        <div class="goal-title"><%= goal.title %></div>
+                                        <div class="goal-meta">
+                                            <span class="goal-progress"><%= goal.current_count || 0 %>/<%= goal.target_count || 0 %></span>
+                                        </div>
+                                    </div>
+                                    <form action="/goals/delete/<%= goal.goal_id %>" method="POST" style="display: inline;" onsubmit="return confirm('Are you sure you want to delete this goal?')">
+                                        <button type="submit" class="btn-icon-small">🗑️</button>
+                                    </form>
+                                </div>
+                            <% }); %>
+                        <% } else { %>
+                            <div class="goal-item">
+                                <div class="goal-content">
+                                    <p style="color: #697268; font-style: italic;">No physical goals yet. Click + to add one!</p>
+                                </div>
+                            </div>
+                        <% } %>
+                    </div>
+                </div>
+
+                <!-- Romantic Goals -->
+                <div class="goal-category romantic">
+                    <div class="category-header">
+                        <div class="category-icon">❤️</div>
+                        <h2 class="category-title">Romantic</h2>
+                        <button class="btn-icon" onclick="addGoalToCategory('romantic')">+</button>
+                    </div>
+                    <div class="category-progress">
+                        <div class="progress-bar">
+                            <div class="progress-fill" style="width: <%= typeof progress !== 'undefined' && progress.romantic ? progress.romantic + '%' : '0%' %>"></div>
+                        </div>
+                        <span class="progress-text"><%= typeof progress !== 'undefined' && progress.romantic ? progress.romantic : '0' %>% Complete</span>
+                    </div>
+                    <div class="goals-list" id="romantic-goals">
+                        <% if (typeof goalsByCategory !== 'undefined' && goalsByCategory.Romantic && goalsByCategory.Romantic.length > 0) { %>
+                            <% goalsByCategory.Romantic.forEach(function(goal) { %>
+                                <div class="goal-item <%= goal.is_completed ? 'completed' : '' %>" data-goal-id="<%= goal.goal_id %>">
+                                    <div class="goal-checkbox">
+                                        <input type="checkbox" id="goal-<%= goal.goal_id %>" <%= goal.is_completed ? 'checked' : '' %> onchange="toggleGoalComplete(<%= goal.goal_id %>, this.checked)">
+                                        <label for="goal-<%= goal.goal_id %>"></label>
+                                    </div>
+                                    <div class="goal-content">
+                                        <div class="goal-title"><%= goal.title %></div>
+                                        <div class="goal-meta">
+                                            <span class="goal-progress"><%= goal.current_count || 0 %>/<%= goal.target_count || 0 %></span>
+                                        </div>
+                                    </div>
+                                    <form action="/goals/delete/<%= goal.goal_id %>" method="POST" style="display: inline;" onsubmit="return confirm('Are you sure you want to delete this goal?')">
+                                        <button type="submit" class="btn-icon-small">🗑️</button>
+                                    </form>
+                                </div>
+                            <% }); %>
+                        <% } else { %>
+                            <div class="goal-item">
+                                <div class="goal-content">
+                                    <p style="color: #697268; font-style: italic;">No romantic goals yet. Click + to add one!</p>
+                                </div>
+                            </div>
+                        <% } %>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Add/Edit Goal Modal -->
+    <div id="goal-modal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 id="modal-title">Add New Goal</h2>
+                <button class="modal-close" onclick="closeGoalModal()">&times;</button>
+            </div>
+            <form id="goal-form" class="modal-form" action="/goals/create" method="POST">
+                <div class="form-group">
+                    <label for="goal-category-select">Category</label>
+                    <select id="goal-category-select" name="category" required>
+                        <option value="">Select category...</option>
+                        <option value="Spiritual">✝️ Spiritual</option>
+                        <option value="Social">👥 Social</option>
+                        <option value="Intellectual">📚 Intellectual</option>
+                        <option value="Physical">💪 Physical</option>
+                        <option value="Romantic">❤️ Romantic</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="goal-title">Goal Title</label>
+                    <input type="text" id="goal-title" name="title" placeholder="What do you want to achieve?" required>
+                </div>
+                <div class="form-group">
+                    <label for="goal-description">Description (Optional)</label>
+                    <textarea id="goal-description" name="description" rows="3" placeholder="Add more details about this goal..."></textarea>
+                </div>
+                <div class="form-group">
+                    <label for="goal-target">Target Count</label>
+                    <input type="number" id="goal-target" name="targetCount" placeholder="e.g., 30" value="0">
+                </div>
+                <div class="form-group">
+                    <label for="goal-deadline">Deadline (Optional)</label>
+                    <input type="date" id="goal-deadline" name="deadline">
+                </div>
+                <div class="modal-actions">
+                    <button type="button" class="btn-outline" onclick="closeGoalModal()">Cancel</button>
+                    <button type="submit" class="btn-primary">Save Goal</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        // Modal functions
+        function openAddGoalModal(category = '') {
+            document.getElementById('goal-modal').style.display = 'flex';
+            document.getElementById('modal-title').textContent = 'Add New Goal';
+            document.getElementById('goal-form').reset();
+            if (category) {
+                const capitalizedCategory = category.charAt(0).toUpperCase() + category.slice(1);
+                document.getElementById('goal-category-select').value = capitalizedCategory;
+            }
+        }
+
+        function addGoalToCategory(category) {
+            openAddGoalModal(category);
+        }
+
+        function closeGoalModal() {
+            document.getElementById('goal-modal').style.display = 'none';
+        }
+
+        // Toggle goal completion
+        async function toggleGoalComplete(goalId, isCompleted) {
+            try {
+                const response = await fetch(`/goals/update/${goalId}`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/x-www-form-urlencoded',
+                    },
+                    body: `isCompleted=${isCompleted}`
+                });
+
+                if (response.ok) {
+                    // Update UI
+                    const goalItem = document.querySelector(`[data-goal-id="${goalId}"]`);
+                    if (goalItem) {
+                        if (isCompleted) {
+                            goalItem.classList.add('completed');
+                        } else {
+                            goalItem.classList.remove('completed');
+                        }
+                    }
+                    // Reload to update statistics
+                    location.reload();
+                }
+            } catch (error) {
+                console.error('Error updating goal:', error);
+                alert('Failed to update goal');
+            }
+        }
+
+        // Close modal when clicking outside
+        window.onclick = function(event) {
+            const modal = document.getElementById('goal-modal');
+            if (event.target === modal) {
+                closeGoalModal();
+            }
+        }
+    </script>
+</body>
+</html>

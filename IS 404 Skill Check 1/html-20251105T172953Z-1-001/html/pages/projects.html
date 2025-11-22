@@ -1,0 +1,106 @@
+  <!DOCTYPE html>
+  <html lang="en">
+  <head>
+      <meta charset="UTF-8">
+      <meta name="viewport" content="width=device-width, initial-scale=1.0">
+      <title>Projects - Jacob Dishman</title>
+      <link rel="stylesheet" href="/style.css">
+      <script>
+          // IS 403 JavaScript functionality - Interactive project counter
+          document.addEventListener("DOMContentLoaded", function() {
+              let clickCount = 0;
+              const counter = document.getElementById("clickCounter");
+              const button = document.getElementById("countButton");
+              
+              button.addEventListener("click", function() {
+                  clickCount++;
+                  counter.textContent = clickCount;
+                  
+                  // Change background color based on clicks
+                  if (clickCount % 5 === 0) {
+                      document.body.style.transition = "background-color 0.5s";
+                      document.body.style.backgroundColor = "#" + Math.floor(Math.random()*16777215).toString(16);
+                  }
+              });
+              
+              // Auto-save count to localStorage
+              window.addEventListener("beforeunload", function() {
+                  localStorage.setItem("projectClicks", clickCount);
+              });
+              
+              // Load saved count
+              const saved = localStorage.getItem("projectClicks");
+              if (saved) {
+                  clickCount = parseInt(saved);
+                  counter.textContent = clickCount;
+              }
+          });
+      </script>
+      <style>
+          body {
+              background: #1a1a1a;
+              color: #ffffff;
+          }
+          .counter-section {
+              margin: 20px 0;
+              padding: 20px;
+              background: rgba(76, 175, 80, 0.2);
+              border-radius: 8px;
+              border: 2px solid #4CAF50;
+          }
+          #countButton {
+              padding: 10px 20px;
+              font-size: 16px;
+              cursor: pointer;
+              background: #4CAF50;
+              color: white;
+              border: none;
+              border-radius: 4px;
+              transition: background 0.3s;
+          }
+          #countButton:hover {
+              background: #45a049;
+          }
+          a {
+              color: #4CAF50;
+              text-decoration: none;
+          }
+          a:hover {
+              text-decoration: underline;
+          }
+      </style>
+  </head>
+  <body>
+      <div class="App">
+          <div class="header-section">
+              <div class="header-content">
+                  <h1 class="site-title">Projects</h1>
+                  <nav>
+                      <a href="/index.html">Home</a> | 
+                      <a href="/pages/about.html">About</a> | 
+                      <a href="/pages/projects.html">Projects</a>
+                  </nav>
+              </div>
+          </div>
+          <div class="content-section">
+              <div class="wurtz-container">
+                  <h2>My Projects</h2>
+                  <p>This page showcases my work and demonstrates JavaScript
+   functionality learned in IS 403.</p>
+                  
+                  <div class="counter-section">
+                      <h3>Interactive Project Interest Counter</h3>
+                      <p>Click the button to show your interest! (Clicks are
+   saved to localStorage)</p>
+                      <button id="countButton">Click Me!</button>
+                      <p>Total Clicks: <strong 
+  id="clickCounter">0</strong></p>
+                      <p><em>Hint: Every 5 clicks changes the background 
+  color!</em></p>
+                  </div>
+              </div>
+          </div>
+      </div>
+  </body>
+  </html>
+  ENDFILE
