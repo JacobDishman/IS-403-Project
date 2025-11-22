@@ -199,6 +199,26 @@ router.get('/logout', (req, res) => {
     });
 });
 
+// Profile page
+router.get('/profile', requireAuth, async (req, res) => {
+    try {
+        const user = await db('users')
+            .select('*')
+            .where({ user_id: req.session.user.user_id })
+            .first();
+
+        res.render('profile', {
+            pageTitle: 'Profile - Cal-Endure to the End',
+            currentPage: 'profile',
+            user: user
+        });
+    } catch (error) {
+        console.error('Profile page error:', error);
+        req.session.error = 'Error loading profile';
+        res.redirect('/dashboard');
+    }
+});
+
 // Update user profile photo
 router.post('/profile/photo', requireAuth, upload.single('profilePhoto'), async (req, res) => {
     const userId = req.session.user.user_id;
@@ -236,55 +256,140 @@ router.post('/profile/photo', requireAuth, upload.single('profilePhoto'), async 
         req.session.user.profile_photo = newPhoto;
 
         req.session.success = 'Profile photo updated successfully';
-        res.redirect('/dashboard');
+        res.redirect('/profile');
 
     } catch (error) {
         console.error('Update profile photo error:', error);
         req.session.error = 'Error updating profile photo';
-        res.redirect('/dashboard');
+        res.redirect('/profile');
     }
 });
 
 // Update user profile
 router.post('/profile/update', requireAuth, async (req, res) => {
     const userId = req.session.user.user_id;
-    const { firstName, lastName, email, mission } = req.body;
+    const { firstName, lastName, email, username, mission } = req.body;
 
     try {
+        // Validation
+        if (!firstName || !lastName || !email || !username) {
+            req.session.error = 'Name, email, and username are required';
+            return res.redirect('/profile');
+        }
+
+        // Email format validation
+        if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email.trim())) {
+            req.session.error = 'Invalid email format';
+            return res.redirect('/profile');
+        }
+
+        // Username validation
+        if (!/^[a-zA-Z0-9_]{3,30}$/.test(username.trim())) {
+            req.session.error = 'Username must be 3-30 characters (letters, numbers, underscores)';
+            return res.redirect('/profile');
+        }
+
         // Check if email already exists for another user
-        const existingUser = await db('users')
-            .where({ email })
+        const existingEmail = await db('users')
+            .where({ email: email.trim().toLowerCase() })
             .whereNot({ user_id: userId })
             .first();
 
-        if (existingUser) {
+        if (existingEmail) {
             req.session.error = 'Email already in use by another account';
-            return res.redirect('/dashboard');
+            return res.redirect('/profile');
+        }
+
+        // Check if username already exists for another user (case-insensitive)
+        const existingUsername = await db('users')
+            .whereRaw('LOWER(username) = ?', [username.trim().toLowerCase()])
+            .whereNot({ user_id: userId })
+            .first();
+
+        if (existingUsername) {
+            req.session.error = 'Username already taken';
+            return res.redirect('/profile');
         }
 
         // Update user
         await db('users')
             .where({ user_id: userId })
             .update({
-                first_name: firstName,
-                last_name: lastName,
-                email,
+                first_name: firstName.trim(),
+                last_name: lastName.trim(),
+                email: email.trim().toLowerCase(),
+                username: username.trim().toLowerCase(),
                 mission: mission || null
             });
 
         // Update session
-        req.session.user.first_name = firstName;
-        req.session.user.last_name = lastName;
-        req.session.user.email = email;
+        req.session.user.first_name = firstName.trim();
+        req.session.user.last_name = lastName.trim();
+        req.session.user.email = email.trim().toLowerCase();
+        req.session.user.username = username.trim().toLowerCase();
         req.session.user.mission = mission;
 
         req.session.success = 'Profile updated successfully';
-        res.redirect('/dashboard');
+        res.redirect('/profile');
 
     } catch (error) {
         console.error('Update profile error:', error);
         req.session.error = 'Error updating profile';
-        res.redirect('/dashboard');
+        res.redirect('/profile');
+    }
+});
+
+// Change password
+router.post('/profile/password', requireAuth, async (req, res) => {
+    const userId = req.session.user.user_id;
+    const { currentPassword, newPassword, confirmPassword } = req.body;
+
+    try {
+        // Validation
+        if (!currentPassword || !newPassword || !confirmPassword) {
+            req.session.error = 'All password fields are required';
+            return res.redirect('/profile');
+        }
+
+        if (newPassword !== confirmPassword) {
+            req.session.error = 'New passwords do not match';
+            return res.redirect('/profile');
+        }
+
+        if (newPassword.length < 6) {
+            req.session.error = 'New password must be at least 6 characters';
+            return res.redirect('/profile');
+        }
+
+        // Get current user
+        const user = await db('users')
+            .select('password_hash')
+            .where({ user_id: userId })
+            .first();
+
+        // Verify current password
+        const match = await bcrypt.compare(currentPassword, user.password_hash);
+        if (!match) {
+            req.session.error = 'Current password is incorrect';
+            return res.redirect('/profile');
+        }
+
+        // Hash new password
+        const saltRounds = 10;
+        const newHash = await bcrypt.hash(newPassword, saltRounds);
+
+        // Update password
+        await db('users')
+            .where({ user_id: userId })
+            .update({ password_hash: newHash });
+
+        req.session.success = 'Password changed successfully';
+        res.redirect('/profile');
+
+    } catch (error) {
+        console.error('Change password error:', error);
+        req.session.error = 'Error changing password';
+        res.redirect('/profile');
     }
 });
 
