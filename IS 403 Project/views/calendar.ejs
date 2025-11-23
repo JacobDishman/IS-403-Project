@@ -365,6 +365,11 @@
                     currentMonth = 12;
                     currentYear--;
                 }
+                // Validate day exists in new month
+                const daysInMonth = new Date(currentYear, currentMonth, 0).getDate();
+                if (currentDay > daysInMonth) {
+                    currentDay = daysInMonth;
+                }
             } else if (currentView === 'week') {
                 const date = new Date(currentYear, currentMonth - 1, currentDay);
                 date.setDate(date.getDate() - 7);
@@ -388,6 +393,11 @@
                 if (currentMonth > 12) {
                     currentMonth = 1;
                     currentYear++;
+                }
+                // Validate day exists in new month
+                const daysInMonth = new Date(currentYear, currentMonth, 0).getDate();
+                if (currentDay > daysInMonth) {
+                    currentDay = daysInMonth;
                 }
             } else if (currentView === 'week') {
                 const date = new Date(currentYear, currentMonth - 1, currentDay);

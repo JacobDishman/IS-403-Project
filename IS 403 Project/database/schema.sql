@@ -40,6 +40,21 @@ CREATE TABLE contacts (
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
+-- Goals Table (must be before Events due to FK reference)
+CREATE TABLE goals (
+    goal_id SERIAL PRIMARY KEY,
+    user_id INT REFERENCES users(user_id) ON DELETE CASCADE,
+    title VARCHAR(200) NOT NULL,
+    category VARCHAR(50) NOT NULL,
+    target_count INT DEFAULT 0,
+    current_count INT DEFAULT 0,
+    description TEXT,
+    deadline DATE,
+    is_completed BOOLEAN DEFAULT FALSE,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
 -- Events Table
 CREATE TABLE events (
     event_id SERIAL PRIMARY KEY,
@@ -57,21 +72,6 @@ CREATE TABLE events (
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     CONSTRAINT valid_time_range CHECK (end_time IS NULL OR end_time >= start_time)
-);
-
--- Goals Table
-CREATE TABLE goals (
-    goal_id SERIAL PRIMARY KEY,
-    user_id INT REFERENCES users(user_id) ON DELETE CASCADE,
-    title VARCHAR(200) NOT NULL,
-    category VARCHAR(50) NOT NULL,
-    target_count INT DEFAULT 0,
-    current_count INT DEFAULT 0,
-    description TEXT,
-    deadline DATE,
-    is_completed BOOLEAN DEFAULT FALSE,
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
 -- Contact_Events Junction Table (Many-to-Many relationship)
