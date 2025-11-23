@@ -5,6 +5,14 @@
     <!-- Main Content -->
     <main class="app-main">
         <div class="app-container">
+            <!-- Flash Messages -->
+            <% if (typeof error !== 'undefined' && error) { %>
+                <div class="alert alert-error"><%= error %></div>
+            <% } %>
+            <% if (typeof success !== 'undefined' && success) { %>
+                <div class="alert alert-success"><%= success %></div>
+            <% } %>
+
             <!-- Page Header -->
             <header class="page-header">
                 <div>
