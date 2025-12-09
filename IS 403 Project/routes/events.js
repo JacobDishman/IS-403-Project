@@ -68,12 +68,18 @@ router.get('/', async (req, res) => {
             .orderBy('last_name')
             .orderBy('first_name');
 
+        // Get calendar-type goals for linking
+        const goals = await db('goals')
+            .where({ user_id: userId, goal_type: 'calendar' })
+            .select('goal_id', 'title', 'goal_type');
+
         res.render('calendar', {
             pageTitle: 'Calendar - Cal-Endure to the End',
             currentPage: 'calendar',
             events: events.rows,
             todayEvents: todayEvents.rows,
             contacts,
+            goals,
             currentYear,
             currentMonth,
             today: {
@@ -94,7 +100,7 @@ router.get('/', async (req, res) => {
 router.post('/create', async (req, res) => {
     const {
         title, eventDate, startTime, endTime, eventType,
-        location, notes, contacts
+        location, notes, contacts, goalId
     } = req.body;
     const userId = req.session.user.user_id;
 
@@ -103,13 +109,16 @@ router.post('/create', async (req, res) => {
         const [event] = await db('events')
             .insert({
                 user_id: userId,
+                goal_id: goalId || null,
                 title,
                 event_date: eventDate,
                 start_time: startTime,
                 end_time: endTime || null,
                 event_type: eventType,
                 location,
-                notes
+                notes,
+                color: req.body.color || '#0d3b66',
+                status: 'pending'
             })
             .returning('event_id');
 
@@ -165,12 +174,63 @@ router.get('/:id', async (req, res) => {
     }
 });
 
+// Update event status (for calendar goals)
+router.post('/:id/status', async (req, res) => {
+    const { id } = req.params;
+    const { status } = req.body;
+    const userId = req.session.user.user_id;
+
+    try {
+        const event = await db('events')
+            .where({ event_id: id, user_id: userId })
+            .first();
+
+        if (!event) {
+            return res.status(404).json({ success: false, error: 'Event not found' });
+        }
+
+        await db('events')
+            .where({ event_id: id, user_id: userId })
+            .update({ status });
+
+        // If event is linked to a calendar goal, update goal progress
+        if (event.goal_id) {
+            const goal = await db('goals')
+                .where({ goal_id: event.goal_id, goal_type: 'calendar' })
+                .first();
+
+            if (goal) {
+                const completedEvents = await db('events')
+                    .where({ goal_id: goal.goal_id, status: 'completed' })
+                    .count('* as count')
+                    .first();
+
+                const completed = parseInt(completedEvents.count);
+                const required = goal.linked_events_required || 0;
+
+                // Update goal completion status
+                await db('goals')
+                    .where({ goal_id: goal.goal_id })
+                    .update({
+                        is_completed: completed >= required && required > 0
+                    });
+            }
+        }
+
+        res.json({ success: true, status });
+
+    } catch (error) {
+        console.error('Update event status error:', error);
+        res.status(500).json({ success: false, error: 'Error updating status' });
+    }
+});
+
 // Update event
 router.post('/update/:id', async (req, res) => {
     const { id } = req.params;
     const {
         title, eventDate, startTime, endTime, eventType,
-        location, notes, contacts
+        location, notes, contacts, goalId
     } = req.body;
     const userId = req.session.user.user_id;
 
@@ -179,13 +239,16 @@ router.post('/update/:id', async (req, res) => {
         await db('events')
             .where({ event_id: id, user_id: userId })
             .update({
+                goal_id: goalId || null,
                 title,
                 event_date: eventDate,
                 start_time: startTime,
                 end_time: endTime || null,
                 event_type: eventType,
                 location,
-                notes
+                notes,
+                color: req.body.color || '#0d3b66',
+                status: req.body.status || 'pending'
             });
 
         // Delete existing contact associations

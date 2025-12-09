@@ -11,11 +11,27 @@ router.get('/', async (req, res) => {
     try {
         const userId = req.session.user.user_id;
 
-        // Get all goals for the user
+        // Get all goals for the user with enhanced data
         const goals = await db('goals')
             .where({ user_id: userId })
             .orderBy('category')
             .orderBy('created_at', 'desc');
+
+        // Enhance calendar goals with event counts
+        for (let goal of goals) {
+            if (goal.goal_type === 'calendar' && goal.goal_id) {
+                const eventCounts = await db('events')
+                    .where({ goal_id: goal.goal_id })
+                    .select(
+                        db.raw("COUNT(*) FILTER (WHERE status = 'completed') as completed"),
+                        db.raw("COUNT(*) as total")
+                    )
+                    .first();
+
+                goal.completed_events = parseInt(eventCounts.completed) || 0;
+                goal.total_events = parseInt(eventCounts.total) || 0;
+            }
+        }
 
         // Get today's events
         const events = await db('events')
@@ -36,7 +52,7 @@ router.get('/', async (req, res) => {
             eventstoday: parseInt(todayEvents.count)
         };
 
-        // Group goals by category (capitalize first letter to match DB)
+        // Group goals by category
         const goalsByCategory = {
             'Spiritual': [],
             'Social': [],
