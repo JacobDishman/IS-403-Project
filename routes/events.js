@@ -76,6 +76,7 @@ router.get('/', async (req, res) => {
         res.render('calendar', {
             pageTitle: 'Calendar - Cal-Endure to the End',
             currentPage: 'calendar',
+            user: req.session.user,
             events: events.rows,
             todayEvents: todayEvents.rows,
             contacts,

@@ -1,6 +1,13 @@
 # Elastic Beanstalk ignore file
 # Files that should not be uploaded to EB
 
+# Environment variables (CRITICAL - never upload secrets)
+.env
+.env.*
+
+# Dependencies (EB will install these via package.json)
+node_modules/
+
 # Git
 .git/
 .gitignore

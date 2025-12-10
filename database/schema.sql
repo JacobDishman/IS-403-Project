@@ -1,4 +1,5 @@
--- Cal-Endure to the End Database Schema
+-- Cal-Endure to the End Database Schema - UPGRADED VERSION
+-- Supports three goal types: Numeric, Recurring, and Calendar-based
 
 -- Drop tables if they exist (for clean setup)
 DROP TABLE IF EXISTS contact_events CASCADE;
@@ -40,10 +41,42 @@ CREATE TABLE contacts (
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
--- Events Table
+-- UPGRADED Goals Table - Supports Numeric, Recurring, and Calendar goal types
+CREATE TABLE goals (
+    goal_id SERIAL PRIMARY KEY,
+    user_id INT REFERENCES users(user_id) ON DELETE CASCADE,
+    title VARCHAR(200) NOT NULL,
+    category VARCHAR(50) NOT NULL,
+    description TEXT,
+    goal_type VARCHAR(20) NOT NULL CHECK (goal_type IN ('numeric', 'recurring', 'calendar')),
+
+    -- Fields for 'numeric' goals
+    numeric_current_value INT DEFAULT 0,
+    numeric_target_value INT,
+    numeric_unit VARCHAR(50), -- e.g., "books", "pages", "times"
+
+    -- Fields for 'recurring' goals
+    recurrence_pattern VARCHAR(50), -- e.g., "daily", "weekly", "monthly"
+    recurrence_interval INT DEFAULT 1, -- e.g., every 2 weeks
+    recurrence_days VARCHAR(50), -- For weekly: "1,3,5" (Mon, Wed, Fri)
+    last_completed_at TIMESTAMP,
+    completion_count INT DEFAULT 0, -- Total times completed
+
+    -- Fields for 'calendar' goals
+    target_date DATE,
+    linked_events_required INT DEFAULT 0, -- How many events needed
+
+    -- Common fields
+    is_completed BOOLEAN DEFAULT FALSE,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+-- UPGRADED Events Table - Now linked to goals with status tracking
 CREATE TABLE events (
     event_id SERIAL PRIMARY KEY,
     user_id INT REFERENCES users(user_id) ON DELETE CASCADE,
+    goal_id INT REFERENCES goals(goal_id) ON DELETE SET NULL,
     title VARCHAR(100) NOT NULL,
     event_date DATE NOT NULL,
     start_time TIME NOT NULL,
@@ -52,21 +85,7 @@ CREATE TABLE events (
     location VARCHAR(200),
     notes TEXT,
     reminder BOOLEAN DEFAULT FALSE,
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-);
-
--- Goals Table
-CREATE TABLE goals (
-    goal_id SERIAL PRIMARY KEY,
-    user_id INT REFERENCES users(user_id) ON DELETE CASCADE,
-    title VARCHAR(200) NOT NULL,
-    category VARCHAR(50) NOT NULL,
-    target_count INT DEFAULT 0,
-    current_count INT DEFAULT 0,
-    description TEXT,
-    deadline DATE,
-    is_completed BOOLEAN DEFAULT FALSE,
+    status VARCHAR(20) DEFAULT 'pending' CHECK (status IN ('pending', 'completed', 'missed', 'cancelled')),
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
@@ -82,9 +101,12 @@ CREATE TABLE contact_events (
 -- Create indexes for better query performance
 CREATE INDEX idx_contacts_user_id ON contacts(user_id);
 CREATE INDEX idx_events_user_id ON events(user_id);
+CREATE INDEX idx_events_goal_id ON events(goal_id);
 CREATE INDEX idx_events_date ON events(event_date);
+CREATE INDEX idx_events_status ON events(status);
 CREATE INDEX idx_goals_user_id ON goals(user_id);
 CREATE INDEX idx_goals_category ON goals(category);
+CREATE INDEX idx_goals_type ON goals(goal_type);
 CREATE INDEX idx_contact_events_contact_id ON contact_events(contact_id);
 CREATE INDEX idx_contact_events_event_id ON contact_events(event_id);
 
