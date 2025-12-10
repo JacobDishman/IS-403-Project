@@ -98,6 +98,21 @@ a {
     color: var(--white);
 }
 
+/* Ensure the hero Learn More button pops against the dark gradient */
+.hero .btn-outline {
+    background-color: var(--white);
+    color: var(--white);
+    border-color: var(--white);
+    box-shadow: var(--shadow-lg);
+    text-shadow: 0 0 4px rgba(0, 0, 0, 0.45);
+}
+
+.hero .btn-outline:hover {
+    background-color: rgba(255, 255, 255, 0.9);
+    color: var(--white);
+    transform: translateY(-2px);
+}
+
 .btn-large {
     padding: 16px 36px;
     font-size: 18px;
