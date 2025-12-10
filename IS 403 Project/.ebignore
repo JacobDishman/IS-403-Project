@@ -1,0 +1,61 @@
+# Elastic Beanstalk ignore file
+# Files that should not be uploaded to EB
+
+# Git
+.git/
+.gitignore
+
+# Documentation
+*.md
+README.md
+START-HERE.md
+TESTING-GUIDE.md
+PROJECT-COMPLETE.md
+ALL-FIXED-README.md
+EJS-CONVERSION-SUMMARY.md
+FIXES-APPLIED.md
+PACKAGE-INFO.md
+README-SETUP.md
+SYSTEMATIC-FIXES-COMPLETE.md
+TEAM-SETUP-GUIDE.md
+PROJECT-SUMMARY.md
+EMAIL-TO-SEND.txt
+
+# Development files
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# OS files
+.DS_Store
+Thumbs.db
+*:Zone.Identifier
+
+# Logs
+*.log
+logs/
+
+# Static HTML prototypes (not needed in production)
+landing.html
+login.html
+calendar.html
+contacts.html
+dashboard.html
+
+# Old/backup files
+*-old.*
+*-copy.*
+* - Copy.*
+
+# Part 2 submission folder
+Part 2 Turn in/
+
+# Database files (use RDS instead)
+database/sample-data.sql
+create-test-user.js
+setup-database.sh
+
+# PDF documents
+*.pdf

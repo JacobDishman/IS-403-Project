@@ -266,12 +266,39 @@ router.post('/delete/:id', async (req, res) => {
 
 // Legacy endpoint for backward compatibility
 router.post('/increment/:id', async (req, res) => {
-    // Redirect to the new numeric/log endpoint
-    return router.handle({
-        ...req,
-        url: `/goals/numeric/${req.params.id}/log`,
-        body: { amount: 1 }
-    }, res);
+    // Call the numeric log endpoint directly
+    const { id } = req.params;
+    const userId = req.session.user.user_id;
+
+    try {
+        const goal = await db('goals')
+            .where({ goal_id: id, user_id: userId, goal_type: 'numeric' })
+            .first();
+
+        if (!goal) {
+            return res.status(404).json({ success: false, error: 'Goal not found' });
+        }
+
+        const newValue = (goal.numeric_current_value || 0) + 1;
+
+        await db('goals')
+            .where({ goal_id: id, user_id: userId })
+            .update({
+                numeric_current_value: newValue,
+                is_completed: newValue >= goal.numeric_target_value
+            });
+
+        res.json({
+            success: true,
+            current: newValue,
+            target: goal.numeric_target_value,
+            completed: newValue >= goal.numeric_target_value
+        });
+
+    } catch (error) {
+        console.error('Increment goal error:', error);
+        res.status(500).json({ success: false, error: 'Error updating progress' });
+    }
 });
 
 module.exports = router;

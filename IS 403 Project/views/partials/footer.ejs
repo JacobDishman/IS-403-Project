@@ -27,5 +27,10 @@
         </div>
     </div>
 </footer>
+
+<% if (typeof user !== 'undefined' && user) { %>
+    <%- include('profile-modal') %>
+<% } %>
+
 </body>
 </html>

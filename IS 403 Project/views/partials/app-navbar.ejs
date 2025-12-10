@@ -23,8 +23,7 @@
                 <img src="<%= typeof user !== 'undefined' && user.profile_photo ? user.profile_photo : 'https://via.placeholder.com/40' %>" alt="User" class="user-avatar">
                 <span class="user-name"><%= typeof user !== 'undefined' && user.first_name ? user.first_name + ' ' + user.last_name : 'Elder Smith' %></span>
                 <div class="user-dropdown">
-                    <a href="/profile">Profile</a>
-                    <a href="/settings">Settings</a>
+                    <a href="#" onclick="openProfileModal(); return false;">Profile</a>
                     <a href="/logout">Logout</a>
                 </div>
             </div>

@@ -180,6 +180,13 @@ router.get('/logout', (req, res) => {
     });
 });
 
+// Profile page
+router.get('/profile', requireAuth, (req, res) => {
+    res.render('profile', {
+        pageTitle: 'Profile - Cal-Endure to the End'
+    });
+});
+
 // Update user profile photo
 router.post('/profile/photo', requireAuth, upload.single('profilePhoto'), async (req, res) => {
     const userId = req.session.user.user_id;
@@ -217,30 +224,41 @@ router.post('/profile/photo', requireAuth, upload.single('profilePhoto'), async 
         req.session.user.profile_photo = newPhoto;
 
         req.session.success = 'Profile photo updated successfully';
-        res.redirect('/dashboard');
+        res.redirect('/profile');
 
     } catch (error) {
         console.error('Update profile photo error:', error);
         req.session.error = 'Error updating profile photo';
-        res.redirect('/dashboard');
+        res.redirect('/profile');
     }
 });
 
 // Update user profile
 router.post('/profile/update', requireAuth, async (req, res) => {
     const userId = req.session.user.user_id;
-    const { firstName, lastName, email, mission } = req.body;
+    const { firstName, lastName, email, username, mission } = req.body;
 
     try {
         // Check if email already exists for another user
-        const existingUser = await db('users')
+        const existingEmail = await db('users')
             .where({ email })
             .whereNot({ user_id: userId })
             .first();
 
-        if (existingUser) {
+        if (existingEmail) {
             req.session.error = 'Email already in use by another account';
-            return res.redirect('/dashboard');
+            return res.redirect('/profile');
+        }
+
+        // Check if username already exists for another user
+        const existingUsername = await db('users')
+            .where({ username })
+            .whereNot({ user_id: userId })
+            .first();
+
+        if (existingUsername) {
+            req.session.error = 'Username already in use by another account';
+            return res.redirect('/profile');
         }
 
         // Update user
@@ -250,6 +268,7 @@ router.post('/profile/update', requireAuth, async (req, res) => {
                 first_name: firstName,
                 last_name: lastName,
                 email,
+                username,
                 mission: mission || null
             });
 
@@ -257,15 +276,95 @@ router.post('/profile/update', requireAuth, async (req, res) => {
         req.session.user.first_name = firstName;
         req.session.user.last_name = lastName;
         req.session.user.email = email;
+        req.session.user.username = username;
         req.session.user.mission = mission;
 
         req.session.success = 'Profile updated successfully';
-        res.redirect('/dashboard');
+        res.redirect('/profile');
 
     } catch (error) {
         console.error('Update profile error:', error);
         req.session.error = 'Error updating profile';
-        res.redirect('/dashboard');
+        res.redirect('/profile');
+    }
+});
+
+// Change password
+router.post('/profile/password', requireAuth, async (req, res) => {
+    const userId = req.session.user.user_id;
+    const { currentPassword, newPassword, confirmPassword } = req.body;
+
+    try {
+        // Validate passwords match
+        if (newPassword !== confirmPassword) {
+            req.session.error = 'New passwords do not match';
+            return res.redirect('/profile');
+        }
+
+        if (newPassword.length < 6) {
+            req.session.error = 'Password must be at least 6 characters';
+            return res.redirect('/profile');
+        }
+
+        // Get current user
+        const user = await db('users')
+            .where({ user_id: userId })
+            .first();
+
+        if (!user) {
+            req.session.error = 'User not found';
+            return res.redirect('/profile');
+        }
+
+        // Verify current password
+        const match = await bcrypt.compare(currentPassword, user.password_hash);
+
+        if (!match) {
+            req.session.error = 'Current password is incorrect';
+            return res.redirect('/profile');
+        }
+
+        // Hash new password
+        const saltRounds = 10;
+        const newPasswordHash = await bcrypt.hash(newPassword, saltRounds);
+
+        // Update password
+        await db('users')
+            .where({ user_id: userId })
+            .update({ password_hash: newPasswordHash });
+
+        req.session.success = 'Password changed successfully';
+        res.redirect('/profile');
+
+    } catch (error) {
+        console.error('Change password error:', error);
+        req.session.error = 'Error changing password';
+        res.redirect('/profile');
+    }
+});
+
+// Delete account
+router.post('/profile/delete', requireAuth, async (req, res) => {
+    const userId = req.session.user.user_id;
+
+    try {
+        // Delete user (cascade will delete all related data)
+        await db('users')
+            .where({ user_id: userId })
+            .del();
+
+        // Destroy session
+        req.session.destroy((err) => {
+            if (err) {
+                console.error('Session destroy error:', err);
+            }
+            res.redirect('/?deleted=true');
+        });
+
+    } catch (error) {
+        console.error('Delete account error:', error);
+        req.session.error = 'Error deleting account';
+        res.redirect('/profile');
     }
 });
 

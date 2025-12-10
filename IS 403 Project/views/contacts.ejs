@@ -384,7 +384,6 @@
         function filterContacts(filter) {
             document.querySelectorAll('.filter-btn').forEach(btn => btn.classList.remove('active'));
             event.target.classList.add('active');
-            console.log('Filtering by:', filter);
             // In real implementation, filter contacts by category
         }
 
@@ -406,7 +405,6 @@
 
         // Contact actions
         function viewContact(contactId) {
-            console.log('View contact:', contactId);
             // In real implementation, navigate to contact details page
             alert('Contact details view would open here');
         }
@@ -474,5 +472,7 @@
         `;
         document.head.appendChild(style);
     </script>
+
+    <%- include('partials/profile-modal') %>
 </body>
 </html>
